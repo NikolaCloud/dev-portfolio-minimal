@@ -1,0 +1,38 @@
+[
+  {
+    "id": "omniparse",
+    "title": "OmniParse Studio",
+    "category": "Desktop / Automation",
+    "description": "Многопоточный краулер с встроенным антидетектом, ротацией прокси и экспортом данных в XLSX, CSV и JSON.",
+    "stack": ["Python", "CustomTkinter", "BeautifulSoup4", "SQLite", "Pandas"],
+    "github": "https://github.com/username/omniparse-studio",
+    "badge": "Featured"
+  },
+  {
+    "id": "sentinel-siem",
+    "title": "Sentinel SIEM Platform",
+    "category": "Cybersecurity / SOC",
+    "description": "Система мониторинга журналов Linux/Nginx/Windows, выявление SQLi, Brute-Force и сопоставление с MITRE ATT&CK.",
+    "stack": ["Python", "Regex Engine", "Correlation Core", "SQLite", "SOC TUI"],
+    "github": "https://github.com/username/sentinel-siem",
+    "badge": "Security"
+  },
+  {
+    "id": "shopflow",
+    "title": "ShopFlow Telegram Platform",
+    "category": "E-Commerce / Bots",
+    "description": "Платформа онлайн-магазина с каталогом, корзиной, промокодами, Telegram Mini App витриной и веб-админкой на FastAPI.",
+    "stack": ["Python", "Telebot", "FastAPI", "Telegram WebApp", "Uvicorn"],
+    "github": "https://github.com/username/shopflow-telegram",
+    "badge": "E-Commerce"
+  },
+  {
+    "id": "datapulse",
+    "title": "DataPulse ETL & BI",
+    "category": "Data Engineering",
+    "description": "Автоматизированный ETL-пайплайн с контролем Data Quality SLA, расчетом скользящих средних MA(7) и Z-Score аномалий.",
+    "stack": ["Python", "Streamlit", "Plotly", "NumPy", "SQLite DWH"],
+    "github": "https://github.com/username/datapulse-etl",
+    "badge": "Data"
+  }
+]
