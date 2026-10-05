@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Александр | Senior Python & Fullstack Developer</title>
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="logo"><span>&lt;/&gt;</span> alex.dev</a>
+      <div class="nav-links">
+        <a href="#about">Обо мне</a>
+        <a href="#projects">Проекты</a>
+        <a href="#skills">Стек</a>
+        <a href="#contact" class="btn-hire">Связаться</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="container hero" id="about">
+    <div>
+      <div class="status-pill">● Доступен для новых проектов и контрактов</div>
+      <h1>Разрабатываю <span class="gradient-text">высоконагруженные бэкенды</span>, парсеры и ботов</h1>
+      <p>Специализируюсь на Python, FastAPI, асинхронных архитектурах, системах безопасности и автоматизации бизнес-процессов.</p>
+      <div class="hero-actions">
+        <a href="#projects" class="btn-primary">Смотреть проекты</a>
+        <a href="https://github.com" target="_blank" class="btn-secondary">GitHub Профиль ↗</a>
+      </div>
+    </div>
+
+    <!-- Interactive Terminal -->
+    <div class="terminal-window">
+      <div class="term-bar">
+        <div class="term-dot r"></div>
+        <div class="term-dot y"></div>
+        <div class="term-dot g"></div>
+        <div class="term-title">alex@macos-m3: ~ (zsh)</div>
+      </div>
+      <div class="term-body" id="termOutput">
+        <span class="term-green">✔ System initialized:</span> Python 3.11, Docker, Linux Core<br>
+        <span class="term-blue">dev@portfolio:~$</span> whoami<br>
+        Александр — Software Engineer (Backend / Data / Security)<br>
+        <span class="term-blue">dev@portfolio:~$</span> cat status.txt<br>
+        7+ крупных законченных систем. Введите <span class="term-green">help</span> для списка команд.
+      </div>
+      <div class="term-bar" style="border-top: 1px solid rgba(255,255,255,0.08); border-bottom: none;">
+        <span class="term-blue" style="font-size:12px;">$</span>
+        <input type="text" id="termInput" class="term-input" placeholder="Введите команду (help, skills, projects)...">
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Projects -->
+  <section class="container section" id="projects">
+    <div class="sec-header">
+      <h2 class="sec-title">Избранные проекты</h2>
+      <p class="sec-subtitle">Боевые решения с продуманной многослойной архитектурой и тестами</p>
+    </div>
+
+    <div class="projects-grid">
+      <!-- Project 1 -->
+      <div class="project-card">
+        <div>
+          <div class="card-top">
+            <span class="badge">Desktop / Automation</span>
+            <span style="font-size:12px; color:#64748b;">v2.4</span>
+          </div>
+          <div class="p-title">OmniParse Studio</div>
+          <div class="p-desc">Многопоточный комплекс парсинга каталогов и мониторинга цен с встроенным антидетектом, ротацией User-Agent и экспортом в XLSX/CSV/JSON.</div>
+          <div class="stack-tags">
+            <span class="stack-tag">Python</span>
+            <span class="stack-tag">CustomTkinter</span>
+            <span class="stack-tag">BeautifulSoup4</span>
+            <span class="stack-tag">SQLite</span>
+          </div>
+        </div>
+        <div>
+          <a href="#" class="card-link">Подробнее о решении →</a>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="project-card">
+        <div>
+          <div class="card-top">
+            <span class="badge" style="background:rgba(239, 68, 68, 0.1); color:#f87171; border-color:rgba(239, 68, 68, 0.2);">Cybersecurity / SOC</span>
+            <span style="font-size:12px; color:#64748b;">Enterprise</span>
+          </div>
+          <div class="p-title">Sentinel SIEM Platform</div>
+          <div class="p-desc">Система анализа журналов Linux auth.log, Nginx и Windows EventLog. Корреляция атак Brute-Force, SQLi и маппинг с матрицей MITRE ATT&CK.</div>
+          <div class="stack-tags">
+            <span class="stack-tag">Python</span>
+            <span class="stack-tag">SOC Engine</span>
+            <span class="stack-tag">MITRE ATT&CK</span>
+            <span class="stack-tag">Regex Core</span>
+          </div>
+        </div>
+        <div>
+          <a href="#" class="card-link">Подробнее о решении →</a>
+        </div>
+      </div>
+
+      <!-- Project 3 -->
+      <div class="project-card">
+        <div>
+          <div class="card-top">
+            <span class="badge" style="background:rgba(52, 211, 153, 0.1); color:#34d399; border-color:rgba(52, 211, 153, 0.2);">E-Commerce / Bots</span>
+            <span style="font-size:12px; color:#64748b;">Platform</span>
+          </div>
+          <div class="p-title">ShopFlow Telegram Platform</div>
+          <div class="p-desc">Многомодульная коммерческая платформа: Telegram-бот, WebApp Mini App витрина, корзина, промокоды и веб-админка на FastAPI.</div>
+          <div class="stack-tags">
+            <span class="stack-tag">Python</span>
+            <span class="stack-tag">Telebot</span>
+            <span class="stack-tag">FastAPI</span>
+            <span class="stack-tag">WebApp API</span>
+          </div>
+        </div>
+        <div>
+          <a href="#" class="card-link">Подробнее о решении →</a>
+        </div>
+      </div>
+
+      <!-- Project 4 -->
+      <div class="project-card">
+        <div>
+          <div class="card-top">
+            <span class="badge" style="background:rgba(168, 85, 247, 0.1); color:#c084fc; border-color:rgba(168, 85, 247, 0.2);">Data Engineering</span>
+            <span style="font-size:12px; color:#64748b;">Pipeline</span>
+          </div>
+          <div class="p-title">DataPulse ETL & BI</div>
+          <div class="p-desc">Автоматизированный DAG-пайплайн с контролем качества данных Data Quality SLA, скользящими MA(7) и Z-Score детекцией аномалий.</div>
+          <div class="stack-tags">
+            <span class="stack-tag">Streamlit</span>
+            <span class="stack-tag">Plotly</span>
+            <span class="stack-tag">Pandas</span>
+            <span class="stack-tag">SQLite DWH</span>
+          </div>
+        </div>
+        <div>
+          <a href="#" class="card-link">Подробнее о решении →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact & Hire -->
+  <section class="container section" id="contact">
+    <div class="contact-box">
+      <div class="contact-info">
+        <h3>Обсудим ваш проект?</h3>
+        <p>Всегда открыт к проектированию бэкенд-систем, автоматизации сбора данных, разработке Telegram-платформ и аудиту безопасности.</p>
+        <div class="contact-item">💬 Telegram: <b>@alex_developer</b></div>
+        <div class="contact-item">🐙 GitHub: <b>github.com/alex-dev</b></div>
+        <div class="contact-item">📍 Локация: <b>Удаленно / Worldwide</b></div>
+      </div>
+
+      <form class="contact-form" id="contactForm">
+        <input type="text" class="form-input" placeholder="Ваше имя" required>
+        <input type="text" class="form-input" placeholder="Telegram @username или Email" required>
+        <textarea class="form-input" placeholder="Краткое описание задачи или проекта..." required></textarea>
+        <button type="submit" class="btn-primary" style="border:none; cursor:pointer;">Отправить сообщение</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer container">
+    © 2026 Александр. Спроектировано с упором на производительность и чистый код.
+  </footer>
+
+  <script src="static/js/main.js"></script>
+</body>
+</html>
