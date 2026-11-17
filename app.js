@@ -1,13 +1,13 @@
 /**
- * PROTESLA LABS // INTERACTIVE ENGINE & CYBER HUD
- * 100% Vanilla JavaScript. Zero external dependencies. High performance.
+ * PROTESLA LABS // INTERACTIVE ENGINE & CYBER HUD 2.0
+ * Rock-solid stability. Zero jitter. Web Audio synthesizer.
  */
 
 (function () {
   'use strict';
 
   // =========================================================================
-  // 1. WEB AUDIO API SYNTHESIZER (HAPTIC SOUND EFFECTS)
+  // 1. WEB AUDIO API SYNTHESIZER (TACTILE HAPTIC SOUNDS)
   // =========================================================================
   let audioCtx = null;
   let sfxEnabled = true;
@@ -70,24 +70,66 @@
       sfxEnabled = !sfxEnabled;
       if (sfxEnabled) {
         sfxToggleBtn.classList.remove('sfx-muted');
-        sfxToggleBtn.querySelector('.sfx-text').textContent = 'SFX: ВКЛ';
+        sfxToggleBtn.querySelector('.sfx-text').textContent = 'ЗВУК: ВКЛ';
         SFX.click();
       } else {
         sfxToggleBtn.classList.add('sfx-muted');
-        sfxToggleBtn.querySelector('.sfx-text').textContent = 'SFX: ВЫКЛ';
+        sfxToggleBtn.querySelector('.sfx-text').textContent = 'ЗВУК: ВЫКЛ';
       }
     });
   }
 
-  // Bind sound to elements
+  // Global sound click listener
   document.addEventListener('click', (e) => {
-    if (e.target.closest('.sound-click') || e.target.closest('.btn') || e.target.closest('.quick-btn') || e.target.closest('.preset-btn')) {
+    if (e.target.closest('.sound-click') || e.target.closest('.btn') || e.target.closest('.quick-btn') || e.target.closest('.preset-btn') || e.target.closest('.arch-tab')) {
       SFX.click();
     }
   });
 
   // =========================================================================
-  // 2. THEME SWITCHER
+  // 2. UNIFIED FLOATING TOOLTIP ENGINE
+  // =========================================================================
+  const tooltipEl = document.getElementById('floating-tooltip');
+
+  document.addEventListener('mouseover', (e) => {
+    const target = e.target.closest('[data-tooltip]');
+    if (target && tooltipEl) {
+      const text = target.getAttribute('data-tooltip');
+      if (text) {
+        tooltipEl.textContent = text;
+        tooltipEl.classList.remove('hidden');
+      }
+    }
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (tooltipEl && !tooltipEl.classList.contains('hidden')) {
+      const offset = 14;
+      let left = e.clientX + offset;
+      let top = e.clientY + offset;
+
+      // Viewport collision bounds
+      if (left + 280 > window.innerWidth) {
+        left = e.clientX - 290;
+      }
+      if (top + 60 > window.innerHeight) {
+        top = e.clientY - 60;
+      }
+
+      tooltipEl.style.left = `${Math.max(10, left)}px`;
+      tooltipEl.style.top = `${Math.max(10, top)}px`;
+    }
+  });
+
+  document.addEventListener('mouseout', (e) => {
+    const target = e.target.closest('[data-tooltip]');
+    if (target && tooltipEl) {
+      tooltipEl.classList.add('hidden');
+    }
+  });
+
+  // =========================================================================
+  // 3. THEME SWITCHER
   // =========================================================================
   const themeDots = document.querySelectorAll('.theme-dot');
   const savedTheme = localStorage.getItem('protesla_theme') || 'emerald';
@@ -110,26 +152,21 @@
   });
 
   // =========================================================================
-  // 3. INTERACTIVE PARTICLE PHYSICS BACKGROUND (CANVAS 60 FPS)
+  // 4. INTERACTIVE PARTICLE PHYSICS BACKGROUND (CANVAS 60 FPS)
   // =========================================================================
   const canvas = document.getElementById('particle-canvas');
   if (canvas) {
     const ctx = canvas.getContext('2d');
     let width, height;
     let particles = [];
-    const particleCount = 65;
+    const particleCount = 60;
     const maxDistance = 140;
 
-    let mouse = { x: -1000, y: -1000, radius: 160 };
+    let mouse = { x: -1000, y: -1000, radius: 150 };
 
     window.addEventListener('mousemove', (e) => {
       mouse.x = e.clientX;
       mouse.y = e.clientY;
-      const glow = document.getElementById('mouseGlow');
-      if (glow) {
-        glow.style.left = `${e.clientX}px`;
-        glow.style.top = `${e.clientY}px`;
-      }
     });
 
     window.addEventListener('click', (e) => {
@@ -158,43 +195,38 @@
       constructor() {
         this.x = Math.random() * width;
         this.y = Math.random() * height;
-        this.vx = (Math.random() - 0.5) * 0.7;
-        this.vy = (Math.random() - 0.5) * 0.7;
+        this.vx = (Math.random() - 0.5) * 0.6;
+        this.vy = (Math.random() - 0.5) * 0.6;
         this.radius = Math.random() * 2 + 1;
-        this.baseRadius = this.radius;
       }
 
       update() {
         this.x += this.vx;
         this.y += this.vy;
 
-        // Friction to recover from clicks
         this.vx *= 0.985;
         this.vy *= 0.985;
 
-        // Maintain minimum velocity
         if (Math.abs(this.vx) < 0.2) this.vx += (Math.random() - 0.5) * 0.1;
         if (Math.abs(this.vy) < 0.2) this.vy += (Math.random() - 0.5) * 0.1;
 
-        // Bounce from walls
         if (this.x < 0 || this.x > width) this.vx = -this.vx;
         if (this.y < 0 || this.y > height) this.vy = -this.vy;
 
-        // Mouse interaction
         const dx = mouse.x - this.x;
         const dy = mouse.y - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist < mouse.radius) {
           const force = (mouse.radius - dist) / mouse.radius;
-          this.vx -= (dx / dist) * force * 0.5;
-          this.vy -= (dy / dist) * force * 0.5;
+          this.vx -= (dx / dist) * force * 0.45;
+          this.vy -= (dy / dist) * force * 0.45;
         }
       }
 
       draw(accentRgb) {
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${accentRgb}, 0.6)`;
+        ctx.fillStyle = `rgba(${accentRgb}, 0.55)`;
         ctx.fill();
       }
     }
@@ -247,7 +279,7 @@
   }
 
   // =========================================================================
-  // 4. TEXT SCRAMBLE DECODER EFFECT
+  // 5. TEXT SCRAMBLE DECODER EFFECT
   // =========================================================================
   const glyphs = 'ABCDEF0123456789!<>-_\\/[]{}—=+*^?#';
 
@@ -276,14 +308,8 @@
     scrambleText(titleScramble);
   }
 
-  document.querySelectorAll('.scramble-link').forEach(link => {
-    link.addEventListener('mouseenter', () => {
-      SFX.hover();
-    });
-  });
-
   // =========================================================================
-  // 5. LIVE TELEMETRY: MSK CLOCK & PING
+  // 6. LIVE TELEMETRY: MSK CLOCK
   // =========================================================================
   function updateMskClock() {
     const clockEl = document.getElementById('live-msk-time');
@@ -303,40 +329,6 @@
   setInterval(updateMskClock, 1000);
   updateMskClock();
 
-  // Subtle ping variance simulation
-  const pingEl = document.getElementById('server-ping');
-  setInterval(() => {
-    if (pingEl) {
-      const ping = Math.floor(22 + Math.random() * 8);
-      pingEl.textContent = `${ping}ms`;
-    }
-  }, 4000);
-
-  // =========================================================================
-  // 6. 3D TILT EFFECT ON CARDS
-  // =========================================================================
-  const tiltCards = document.querySelectorAll('.card-tilt');
-
-  tiltCards.forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-
-      const rotateX = ((y - centerY) / centerY) * -6;
-      const rotateY = ((x - centerX) / centerX) * 6;
-
-      card.style.transform = `perspective(1000px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-2px)`;
-    });
-
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0)';
-    });
-  });
-
   // =========================================================================
   // 7. COUNTERS ANIMATION (INTERSECTION OBSERVER)
   // =========================================================================
@@ -355,7 +347,6 @@
           function updateCount(time) {
             const elapsed = time - start;
             const progress = Math.min(elapsed / duration, 1);
-            // EaseOutExpo
             const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
             const current = (ease * target).toFixed(target % 1 === 0 ? 0 : 1);
             counter.textContent = current;
@@ -392,7 +383,6 @@
 
   const gaugeFill = document.getElementById('gauge-fill');
   const scoreDisplay = document.getElementById('sim-score-display');
-  const verdictCard = document.getElementById('sim-verdict-card');
   const verdictText = document.getElementById('verdict-text');
   const verdictDetail = document.getElementById('verdict-detail');
   const verdictDot = document.getElementById('verdict-dot');
@@ -414,19 +404,15 @@
     valTime.textContent = time.toFixed(2);
     valSyscalls.textContent = syscalls.toFixed(2);
 
-    // Core formula: Multi-factor anomaly calculation
     let rawScore = (entropy * 0.35) + (time * 0.20) + (syscalls * 0.45);
     if (isEscalation) {
       rawScore += 0.42;
     }
     rawScore = Math.min(1.0, Math.max(0.02, rawScore));
 
-    // Quantile calibration curve (Sigmoid mapping to calibrate tails)
     const calibrated = 1 / (1 + Math.exp(-9 * (rawScore - 0.45)));
     const finalScore = Math.min(0.99, Math.max(0.05, calibrated));
 
-    // Update gauge SVG: stroke-dasharray is 251.2
-    // 0 score => dashoffset 251.2; 1 score => dashoffset 0
     const totalLength = 251.2;
     const offset = totalLength - (finalScore * totalLength);
     if (gaugeFill) {
@@ -437,12 +423,10 @@
       scoreDisplay.textContent = finalScore.toFixed(2);
     }
 
-    // Telemetry updates
     if (telRawScore) telRawScore.textContent = rawScore.toFixed(3);
     if (telUserQ) telUserQ.textContent = `${(finalScore * 98.4).toFixed(1)}%`;
     if (telRoleQ) telRoleQ.textContent = `${(Math.min(1, finalScore * 1.1) * 94.2).toFixed(1)}%`;
 
-    // Verdict state
     if (finalScore < 0.35) {
       scoreDisplay.style.color = '#10b981';
       verdictDot.style.background = '#10b981';
@@ -477,9 +461,7 @@
 
   [sliderEntropy, sliderTime, sliderSyscalls].forEach(slider => {
     if (slider) {
-      slider.addEventListener('input', () => {
-        calculateUEBA();
-      });
+      slider.addEventListener('input', calculateUEBA);
     }
   });
 
@@ -494,7 +476,6 @@
     });
   }
 
-  // Presets
   const presets = {
     normal: { entropy: 0.18, time: 0.08, syscalls: 0.12, escalation: false },
     'dev-night': { entropy: 0.65, time: 0.88, syscalls: 0.35, escalation: false },
@@ -521,7 +502,42 @@
   calculateUEBA();
 
   // =========================================================================
-  // 9. DEVELOPER HUD TERMINAL 2.0 (WITH MATRIX RAIN)
+  // 9. ARCHITECTURE EXPLORER TABS & CODE COPY
+  // =========================================================================
+  const archDescriptions = {
+    generator: '<strong>LSTM Генератор (G):</strong> Принимает латентный вектор z ∈ ℝ¹²⁸ и вектор роли c ∈ ℝᵏ. Воссоздает последовательности длины T=50 с сохранением временных зависимостей через Residual LSTM ячейки.',
+    discriminator: '<strong>WGAN-GP Дискриминатор (D):</strong> Оценивает степень правдоподобия с использованием штрафа за градиент (Wasserstein Gradient Penalty) и спектральной нормализации весов, предотвращая схлопывание мод (mode collapse).',
+    classifier: '<strong>Вспомогательный классификатор (Auxiliary C):</strong> Решает задачу мультиклассовой классификации ролевых категорий, направляя генератор синтезировать строго ролевые профили активности.'
+  };
+
+  document.querySelectorAll('.arch-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.arch-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const key = tab.getAttribute('data-arch');
+      const box = document.getElementById('arch-detail-box');
+      if (box && archDescriptions[key]) {
+        box.innerHTML = archDescriptions[key];
+      }
+    });
+  });
+
+  const copyCodeBtn = document.getElementById('copy-code-btn');
+  if (copyCodeBtn) {
+    copyCodeBtn.addEventListener('click', () => {
+      const code = `def calibrate_anomaly_score(s_raw, user_quantiles, role_quantiles, n_user, n_thresh=30):\n    p_u = np.searchsorted(user_quantiles, s_raw) / len(user_quantiles)\n    p_r = np.searchsorted(role_quantiles, s_raw) / len(role_quantiles)\n    alpha = min(1.0, float(n_user) / n_thresh)\n    return alpha * p_u + (1.0 - alpha) * p_r`;
+      navigator.clipboard.writeText(code).then(() => {
+        copyCodeBtn.textContent = 'Скопировано!';
+        SFX.click();
+        setTimeout(() => {
+          copyCodeBtn.textContent = 'Копировать код';
+        }, 2200);
+      });
+    });
+  }
+
+  // =========================================================================
+  // 10. DEVELOPER HUD TERMINAL 2.0 (STABLE WINDOW & MATRIX RAIN)
   // =========================================================================
   const termInput = document.getElementById('terminal-input');
   const termOutput = document.getElementById('terminal-output');
@@ -574,10 +590,9 @@
 
     neofetch: () => {
       appendTermLine('       _       OS: Ubuntu 24.04.4 LTS x86_64');
-      appendTermLine('     /   \\     Host: ProTesla Cloud Sovereign Node');
-      appendTermLine('    |  ⚡ |    Kernel: Linux 6.8.0-generic');
-      appendTermLine('     \\ _ /     Uptime: Active 24/7');
-      appendTermLine('               Web Engine: Nginx (Strict Hardening & CSP)');
+      appendTermLine('     /   \\     Host: ProTesla Sovereign Node');
+      appendTermLine('    |  🛡️ |    Kernel: Linux 6.8.0-generic');
+      appendTermLine('     \\ _ /     Web Engine: Nginx (SSL Let\'s Encrypt ECDSA & HTTP/2)');
       appendTermLine('               Firewall: UFW + Fail2ban (Active Jails: 3)');
       appendTermLine('               Primary Stack: PyTorch, Go, Python 3.11, Docker, ClickHouse');
     },
@@ -641,7 +656,6 @@
     });
   }
 
-  // Quick buttons
   document.querySelectorAll('.quick-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const cmd = btn.getAttribute('data-cmd');
@@ -656,7 +670,6 @@
     });
   }
 
-  // Matrix Rain Canvas inside terminal
   function toggleMatrixRain() {
     if (!matrixCanvas) return;
     matrixRunning = !matrixRunning;
@@ -706,7 +719,30 @@
   }
 
   // =========================================================================
-  // 10. PROJECT FILTER (BENTO GRID)
+  // 11. SKILLS MATRIX FILTER
+  // =========================================================================
+  const skillTabs = document.querySelectorAll('.skill-tab');
+  const skillCards = document.querySelectorAll('.skill-pill-card');
+
+  skillTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      skillTabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      const cat = tab.getAttribute('data-skill-cat');
+      skillCards.forEach(card => {
+        const itemCat = card.getAttribute('data-cat');
+        if (cat === 'all' || itemCat === cat) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // =========================================================================
+  // 12. PROJECT FILTER (BENTO GRID)
   // =========================================================================
   const filterBtns = document.querySelectorAll('.filter-btn');
   const bentoCards = document.querySelectorAll('.bento-card');
@@ -722,7 +758,6 @@
         const cat = card.getAttribute('data-cat');
         if (filter === 'all' || cat === filter) {
           card.style.display = 'flex';
-          card.style.animation = 'fadeIn 0.3s ease forwards';
         } else {
           card.style.display = 'none';
         }
@@ -731,7 +766,7 @@
   });
 
   // =========================================================================
-  // 11. IMAGE MODAL ZOOM
+  // 13. IMAGE MODAL ZOOM
   // =========================================================================
   const modal = document.getElementById('image-modal');
   const modalImg = document.getElementById('modal-img');
@@ -764,7 +799,7 @@
   }
 
   // =========================================================================
-  // 12. COMMAND PALETTE (CTRL+K / CMD+K)
+  // 14. COMMAND PALETTE (CTRL+K / CMD+K)
   // =========================================================================
   const cmdPalette = document.getElementById('cmd-palette');
   const cmdInput = document.getElementById('cmd-palette-input');
@@ -775,6 +810,7 @@
     { title: 'UEBA Симулятор', type: 'РАЗДЕЛ', action: () => location.href = '#simulator' },
     { title: 'Флагманские R&D Проекты', type: 'РАЗДЕЛ', action: () => location.href = '#flagships' },
     { title: 'Интерактивный Терминал', type: 'РАЗДЕЛ', action: () => location.href = '#terminal-section' },
+    { title: 'Матрица компетенций', type: 'РАЗДЕЛ', action: () => location.href = '#skills-matrix' },
     { title: 'Каталог всех проектов', type: 'РАЗДЕЛ', action: () => location.href = '#projects' },
     { title: 'Патенты и свидетельства Роспатента', type: 'РАЗДЕЛ', action: () => location.href = '#patents' },
     { title: 'Контакты разработчика', type: 'РАЗДЕЛ', action: () => location.href = '#contact' },
@@ -851,7 +887,7 @@
   }
 
   // =========================================================================
-  // 13. COPY EMAIL TO CLIPBOARD
+  // 15. COPY EMAIL TO CLIPBOARD
   // =========================================================================
   const copyBtn = document.getElementById('copy-email-btn');
   const copyStatus = document.getElementById('copy-status');

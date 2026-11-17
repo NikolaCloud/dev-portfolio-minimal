@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="cyberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="50%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#064e3b"/>
+    </linearGradient>
+    <filter id="cyberGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#10b981" flood-opacity="0.75"/>
+    </filter>
+  </defs>
+  <!-- Background Hexagon Shield -->
+  <polygon points="32,4 58,18 58,46 32,60 6,46 6,18" fill="#06090e" stroke="url(#borderGrad)" stroke-width="2.5" filter="url(#cyberGlow)"/>
+  <!-- Upper Cyber Bar -->
+  <path d="M15 18 L49 18 L45 24 L19 24 Z" fill="url(#cyberGrad)"/>
+  <!-- Vertical T-Stem with Chamfer -->
+  <path d="M28 27 L36 27 L34.5 48 L29.5 48 Z" fill="url(#cyberGrad)"/>
+  <!-- Core Energy Crystal Point -->
+  <circle cx="32" cy="11" r="2.2" fill="#6ee7b7"/>
+  <!-- Lower Balance Dots -->
+  <circle cx="18" cy="49" r="1.5" fill="#10b981" opacity="0.6"/>
+  <circle cx="46" cy="49" r="1.5" fill="#10b981" opacity="0.6"/>
+</svg>

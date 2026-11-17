@@ -5,28 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ProTesla Labs // Инженерный R&D и Системы Искусственного Интеллекта</title>
   <meta name="description" content="Лаборатория кибернетических систем, поведенческого анализа (UEBA), квантильной калибровки рисков и защищенной High-Load инфраструктуры.">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- Интерактивный физический Canvas фона -->
   <canvas id="particle-canvas"></canvas>
 
-  <!-- Радиальная подсветка мыши -->
-  <div class="mouse-glow" id="mouseGlow"></div>
-
-  <!-- Верхняя строка телеметрии и навигации (Cyber HUD Bar) -->
+  <!-- Верхняя панель навигации (Cyber HUD Bar) -->
   <header class="hud-header">
     <div class="hud-container">
       <div class="brand-zone">
-        <a href="#hero" class="brand-logo">
-          <span class="logo-symbol">⚡</span>
+        <a href="#hero" class="brand-logo" data-tooltip="ProTesla Labs — Главная">
+          <img src="assets/logo.svg" alt="ProTesla Logo" class="brand-emblem-svg">
           <span class="logo-text">PROTESLA<span class="logo-dim">//LABS</span></span>
         </a>
-        <div class="live-pill">
+        <div class="live-pill" data-tooltip="Статус сервера: Узел активен и защищен Nginx + Fail2ban">
           <span class="pulsing-dot"></span>
-          <span class="live-label">NODE:</span>
-          <span id="server-ping">24ms</span>
+          <span class="live-label">NODE ONLINE</span>
         </div>
       </div>
 
@@ -35,24 +31,25 @@
         <a href="#simulator" class="nav-item scramble-link">UEBA Симулятор</a>
         <a href="#flagships" class="nav-item scramble-link">R&D Проекты</a>
         <a href="#terminal-section" class="nav-item scramble-link">Терминал</a>
+        <a href="#skills-matrix" class="nav-item scramble-link">Компетенции</a>
         <a href="#projects" class="nav-item scramble-link">Портфолио</a>
         <a href="#patents" class="nav-item scramble-link">Патенты</a>
         <a href="#contact" class="nav-item scramble-link">Контакты</a>
       </nav>
 
       <div class="hud-controls">
-        <!-- Кнопка звука с эквалайзером -->
-        <button id="sfx-toggle" class="hud-btn sfx-btn" title="Переключить звуковые эффекты Web Audio">
+        <!-- Кнопка звука с поясняющей подсказкой -->
+        <button id="sfx-toggle" class="hud-btn sfx-btn" data-tooltip="Звуковой отклик интерфейса (щелчки клавиш и терминала через Web Audio API)">
           <span class="sfx-icon">
             <span class="eq-bar bar-1"></span>
             <span class="eq-bar bar-2"></span>
             <span class="eq-bar bar-3"></span>
           </span>
-          <span class="sfx-text">SFX: ВКЛ</span>
+          <span class="sfx-text">ЗВУК: ВКЛ</span>
         </button>
 
         <!-- Переключатель тем -->
-        <div class="theme-switcher" title="Цветовая матрица интерфейса">
+        <div class="theme-switcher" data-tooltip="Цветовая матрица: Emerald, Amber, Cyan, Violet">
           <button class="theme-dot active" data-theme="emerald" title="Cyber Emerald"></button>
           <button class="theme-dot" data-theme="amber" title="Tesla Amber"></button>
           <button class="theme-dot" data-theme="cyan" title="Cold Cyan"></button>
@@ -60,7 +57,7 @@
         </div>
 
         <!-- Кнопка Command Palette -->
-        <button id="cmd-k-trigger" class="hud-btn cmd-btn">
+        <button id="cmd-k-trigger" class="hud-btn cmd-btn" data-tooltip="Командная панель и быстрый поиск по сайту">
           <kbd>Ctrl</kbd>+<kbd>K</kbd>
         </button>
       </div>
@@ -76,9 +73,9 @@
           <span class="tech-badge">
             <span class="badge-icon">🛡️</span> R&D · MACHINE LEARNING & CYBERSECURITY
           </span>
-          <div class="clock-badge">
+          <div class="clock-badge" data-tooltip="Точное время серверного кластера (Europe/Moscow)">
             <span class="clock-icon">🕒</span>
-            <span id="live-msk-time">10:14:00 MSK</span>
+            <span id="live-msk-time">10:50:00 MSK</span>
           </div>
         </div>
 
@@ -94,39 +91,39 @@
         </p>
 
         <div class="hero-actions">
-          <a href="#simulator" class="btn btn-primary sound-click">
+          <a href="#simulator" class="btn btn-primary sound-click" data-tooltip="Перейти к интерактивному симулятору детектора">
             <span class="btn-glow"></span>
             <span class="btn-icon">⚡</span>
             <span>Запустить UEBA Симулятор</span>
           </a>
-          <a href="#terminal-section" class="btn btn-secondary sound-click">
+          <a href="#terminal-section" class="btn btn-secondary sound-click" data-tooltip="Открыть интерактивную консоль разработчика">
             <span class="btn-icon">💻</span>
-            <span>Открыть HUD Терминал</span>
+            <span>HUD Терминал</span>
           </a>
-          <a href="https://github.com/NikolaCloud" target="_blank" rel="noopener" class="btn btn-outline sound-click">
+          <a href="https://github.com/NikolaCloud" target="_blank" rel="noopener" class="btn btn-outline sound-click" data-tooltip="Перейти в профиль GitHub @NikolaCloud">
             <span class="btn-icon">📦</span>
             <span>GitHub Репозитории</span>
           </a>
         </div>
 
-        <!-- Интерактивная телеметрия счетчиков -->
+        <!-- Телеметрия счетчиков (стабильные карточки без дергания) -->
         <div class="metrics-grid">
-          <div class="metric-card card-tilt">
+          <div class="metric-card solid-card">
             <div class="metric-num"><span class="counter" data-target="99.4">0</span><span class="metric-unit">%</span></div>
             <div class="metric-label">AUC-ROC детекции UEBA</div>
             <div class="metric-sub">Seq-ACGAN + экстремальные квантили</div>
           </div>
-          <div class="metric-card card-tilt">
+          <div class="metric-card solid-card">
             <div class="metric-num"><span class="counter" data-target="13">0</span><span class="metric-unit">+</span></div>
             <div class="metric-label">Production Репозиториев</div>
             <div class="metric-sub">Open-Source R&D экосистема</div>
           </div>
-          <div class="metric-card card-tilt">
+          <div class="metric-card solid-card">
             <div class="metric-num"><span class="counter" data-target="2">0</span><span class="metric-unit">ПАТЕНТА</span></div>
             <div class="metric-label">Свидетельства Роспатента</div>
             <div class="metric-sub">Гос. регистрация алгоритмов ЭВМ</div>
           </div>
-          <div class="metric-card card-tilt">
+          <div class="metric-card solid-card">
             <div class="metric-num"><span class="counter" data-target="100">0</span><span class="metric-unit">%</span></div>
             <div class="metric-label">Суверенитет и Безопасность</div>
             <div class="metric-sub">Собственная инфраструктура & Nginx Core</div>
@@ -161,7 +158,7 @@
       </div>
     </section>
 
-    <!-- ИНТЕРАКТИВНЫЙ СИМУЛЯТОР UEBA & КАЛИБРОВКИ РИСКОВ (КИЛЛЕР-ФИЧА) -->
+    <!-- ИНТЕРАКТИВНЫЙ СИМУЛЯТОР UEBA & КАЛИБРОВКИ РИСКОВ (УСТОЙЧИВЫЙ БЕЗ НАКЛОНА) -->
     <section id="simulator" class="section-container simulator-section">
       <div class="section-header">
         <div class="section-tag">LIVE INTERACTIVE PLAYGROUND</div>
@@ -172,13 +169,13 @@
         </p>
       </div>
 
-      <div class="simulator-card card-tilt">
+      <div class="simulator-card solid-card">
         <div class="sim-grid">
           <!-- Левая колонка: Органы управления (Слайдеры) -->
           <div class="sim-controls">
             <div class="sim-group">
               <div class="sim-label-row">
-                <label for="slider-entropy">Энтропия поведения (Deviations)</label>
+                <label for="slider-entropy" data-tooltip="Статистический разброс интервалов между вызовами команд">Энтропия поведения (Deviations)</label>
                 <span class="sim-val" id="val-entropy">0.24</span>
               </div>
               <input type="range" id="slider-entropy" min="0" max="1" step="0.01" value="0.24" class="sim-range">
@@ -187,7 +184,7 @@
 
             <div class="sim-group">
               <div class="sim-label-row">
-                <label for="slider-time">Смещение времени активности (Time Shift)</label>
+                <label for="slider-time" data-tooltip="Отличие времени входа в систему от исторического профиля роли">Смещение времени активности (Time Shift)</label>
                 <span class="sim-val" id="val-time">0.10</span>
               </div>
               <input type="range" id="slider-time" min="0" max="1" step="0.01" value="0.10" class="sim-range">
@@ -196,14 +193,14 @@
 
             <div class="sim-group">
               <div class="sim-label-row">
-                <label for="slider-syscalls">Аномальность системных вызовов (Syscalls)</label>
+                <label for="slider-syscalls" data-tooltip="Нетипичные бинарные вызовы, доступ к системным сокетам и файлам паролей">Аномальность системных вызовов (Syscalls)</label>
                 <span class="sim-val" id="val-syscalls">0.15</span>
               </div>
               <input type="range" id="slider-syscalls" min="0" max="1" step="0.01" value="0.15" class="sim-range">
               <span class="sim-hint">Неизвестные бинарные файлы, доступ к /etc/shadow, дескрипторы</span>
             </div>
 
-            <div class="sim-group toggle-group">
+            <div class="sim-group toggle-group" data-tooltip="Имитация критического вектора атаки на повышение привилегий в ОС">
               <label class="toggle-switch">
                 <input type="checkbox" id="toggle-escalation">
                 <span class="toggle-slider"></span>
@@ -216,16 +213,16 @@
 
             <div class="sim-presets">
               <span class="preset-label">Быстрые сценарии:</span>
-              <button class="preset-btn" data-preset="normal">Обычный сотрудник</button>
-              <button class="preset-btn" data-preset="dev-night">Разработчик (ночной релиз)</button>
-              <button class="preset-btn" data-preset="apt">APT-атака (Stealth)</button>
-              <button class="preset-btn" data-preset="brute">Брутфорс / Эксплойт</button>
+              <button class="preset-btn" data-preset="normal" data-tooltip="Штатная работа рядового сотрудника в дневное время">Обычный сотрудник</button>
+              <button class="preset-btn" data-preset="dev-night" data-tooltip="Поздний рабочий сеанс разработчика (высокая энтропия, но без эксплойтов)">Разработчик (ночной релиз)</button>
+              <button class="preset-btn" data-preset="apt" data-tooltip="Скрытная целевая атака (низкая заметность, точечный зондаж)">APT-атака (Stealth)</button>
+              <button class="preset-btn" data-preset="brute" data-tooltip="Агрессивная атака методом перебора с попыткой захвата root">Брутфорс / Эксплойт</button>
             </div>
           </div>
 
           <!-- Правая колонка: Динамический Радар & Спидометр Угрозы -->
           <div class="sim-dashboard">
-            <div class="gauge-wrapper">
+            <div class="gauge-wrapper" data-tooltip="Нормализованный калиброванный риск сессии от 0.00 (безопасно) до 1.00 (критично)">
               <svg class="gauge-svg" viewBox="0 0 200 120">
                 <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="16" stroke-linecap="round"/>
                 <path id="gauge-fill" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gauge-grad)" stroke-width="16" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="200"/>
@@ -277,7 +274,7 @@
       </div>
     </section>
 
-    <!-- ФЛАГМАНСКИЕ R&D РАЗРАБОТКИ -->
+    <!-- ФЛАГМАНСКИЕ R&D РАЗРАБОТКИ + ИНТЕРАКТИВНЫЙ КОД -->
     <section id="flagships" class="section-container">
       <div class="section-header">
         <div class="section-tag">FLAGSHIP RESEARCH & INTELLECTUAL PROPERTY</div>
@@ -290,7 +287,7 @@
 
       <div class="flagships-grid">
         <!-- Флагман 1: Seq-ACGAN -->
-        <article class="flagship-card card-tilt">
+        <article class="flagship-card solid-card">
           <div class="flagship-badge">NEURAL ARCHITECTURE · R&D</div>
           <h3 class="flagship-title">UEBA Seq-ACGAN: Детекция аномалий последовательностей</h3>
           <p class="flagship-text">
@@ -298,9 +295,21 @@
             адаптированная для моделирования дискретно-временных последовательностей действий пользователей в enterprise-сетях.
           </p>
 
-          <div class="interactive-preview">
-            <img src="assets/ueba_dashboard.png" alt="UEBA Seq-ACGAN Архитектура" class="preview-img modal-zoomable" title="Нажмите для увеличения схемы">
+          <div class="interactive-preview" data-tooltip="Нажмите для открытия детальной архитектурной схемы">
+            <img src="assets/ueba_dashboard.png" alt="UEBA Seq-ACGAN Архитектура" class="preview-img modal-zoomable">
             <span class="zoom-badge">🔍 Кликните для зума</span>
+          </div>
+
+          <!-- Интерактивный инспектор архитектурных модулей -->
+          <div class="architecture-explorer">
+            <div class="arch-tabs">
+              <button class="arch-tab active" data-arch="generator">LSTM Generator</button>
+              <button class="arch-tab" data-arch="discriminator">Discriminator (WGAN-GP)</button>
+              <button class="arch-tab" data-arch="classifier">Auxiliary Classifier</button>
+            </div>
+            <div class="arch-content" id="arch-detail-box">
+              <strong>LSTM Генератор (G):</strong> Принимает латентный вектор z ∈ ℝ¹²⁸ и вектор роли c ∈ ℝᵏ. Воссоздает последовательности длины T=50 с сохранением временных зависимостей через Residual LSTM ячейки.
+            </div>
           </div>
 
           <div class="tech-tag-list">
@@ -313,7 +322,7 @@
           </div>
 
           <div class="flagship-footer">
-            <a href="https://github.com/NikolaCloud/ueba-seq-acgan" target="_blank" rel="noopener" class="btn btn-outline sound-click">
+            <a href="https://github.com/NikolaCloud/ueba-seq-acgan" target="_blank" rel="noopener" class="btn btn-outline sound-click" data-tooltip="Перейти в репозиторий проекта на GitHub">
               <span>Репозиторий на GitHub →</span>
             </a>
             <span class="patent-ref">Запатентованный алгоритм</span>
@@ -321,7 +330,7 @@
         </article>
 
         <!-- Флагман 2: Score Calibration -->
-        <article class="flagship-card card-tilt">
+        <article class="flagship-card solid-card">
           <div class="flagship-badge">MATHEMATICAL STATISTICS · CALIBRATION</div>
           <h3 class="flagship-title">UEBA Score Calibration: Квантильная калибровка</h3>
           <p class="flagship-text">
@@ -329,13 +338,23 @@
             за счет динамического пересчета пользовательских и ролевых квантилей с байесовским регуляризатором.
           </p>
 
-          <div class="interactive-preview">
-            <img src="assets/calibration_diagram.png" alt="Схема калибровки квантилей" class="preview-img modal-zoomable" title="Нажмите для увеличения схемы">
+          <div class="interactive-preview" data-tooltip="Нажмите для открытия детальной схемы калибровки квантилей">
+            <img src="assets/calibration_diagram.png" alt="Схема калибровки квантилей" class="preview-img modal-zoomable">
             <span class="zoom-badge">🔍 Кликните для зума</span>
           </div>
 
-          <div class="math-formula-box">
-            <code>p_calibrated = α · p_user(s) + (1 - α) · p_role(s),  α = min(1, N_user / N_threshold)</code>
+          <!-- Интерактивный блок исходного кода алгоритма -->
+          <div class="code-snippet-box">
+            <div class="code-snippet-header">
+              <span class="code-lang">PYTHON / NUMPY KERNEL</span>
+              <button id="copy-code-btn" class="copy-code-btn" data-tooltip="Скопировать алгоритм в буфер">Копировать код</button>
+            </div>
+            <pre class="code-pre"><code>def calibrate_anomaly_score(s_raw, user_quantiles, role_quantiles, n_user, n_thresh=30):
+    """Двухуровневая байесовская квантильная калибровка"""
+    p_u = np.searchsorted(user_quantiles, s_raw) / len(user_quantiles)
+    p_r = np.searchsorted(role_quantiles, s_raw) / len(role_quantiles)
+    alpha = min(1.0, float(n_user) / n_thresh)
+    return alpha * p_u + (1.0 - alpha) * p_r</code></pre>
           </div>
 
           <div class="tech-tag-list">
@@ -347,7 +366,7 @@
           </div>
 
           <div class="flagship-footer">
-            <a href="https://github.com/NikolaCloud/ueba-score-calibration" target="_blank" rel="noopener" class="btn btn-outline sound-click">
+            <a href="https://github.com/NikolaCloud/ueba-score-calibration" target="_blank" rel="noopener" class="btn btn-outline sound-click" data-tooltip="Перейти в репозиторий проекта на GitHub">
               <span>Репозиторий на GitHub →</span>
             </a>
             <span class="patent-ref">Решение проблемы Cold Start</span>
@@ -356,17 +375,17 @@
       </div>
     </section>
 
-    <!-- ИНТЕРАКТИВНЫЙ HUD ТЕРМИНАЛ (ОБНОВЛЕННЫЙ) -->
+    <!-- ИНТЕРАКТИВНЫЙ HUD ТЕРМИНАЛ (УСТОЙЧИВЫЙ БЕЗ НАКЛОНА, С УЛУЧШЕННЫМ СКРОЛЛОМ) -->
     <section id="terminal-section" class="section-container">
       <div class="section-header">
         <div class="section-tag">DEVELOPER HUD CONSOLE</div>
         <h2 class="section-title">Интерактивный терминал инженера</h2>
         <p class="section-desc">
-          Управляйте сессией в стиле настоящего Unix HUD. Поддерживаются горячие клавиши, эффекты матрицы и телеметрия.
+          Управляйте сессией в стиле настоящего Unix HUD. Терминал полностью стабилен, поддерживает скролл колесиком, спецэффекты и горячие клавиши.
         </p>
       </div>
 
-      <div class="terminal-window card-tilt">
+      <div class="terminal-window solid-card">
         <div class="terminal-header">
           <div class="terminal-dots">
             <span class="dot dot-red"></span>
@@ -375,8 +394,8 @@
           </div>
           <div class="terminal-title">nikola@protesla-server:~ (bash 5.2)</div>
           <div class="terminal-actions">
-            <button id="term-matrix-btn" class="term-tool-btn" title="Включить Matrix Rain">⚡ Matrix Rain</button>
-            <button id="term-clear-btn" class="term-tool-btn" title="Очистить терминал">Очистить</button>
+            <button id="term-matrix-btn" class="term-tool-btn" data-tooltip="Включить/выключить эффект дождя Matrix Rain">⚡ Matrix Rain</button>
+            <button id="term-clear-btn" class="term-tool-btn" data-tooltip="Очистить терминал">Очистить</button>
           </div>
         </div>
 
@@ -402,18 +421,93 @@
 
         <div class="terminal-quick-cmds">
           <span class="quick-label">Быстрый вызов:</span>
-          <button class="quick-btn" data-cmd="help">help</button>
-          <button class="quick-btn" data-cmd="projects">projects</button>
-          <button class="quick-btn" data-cmd="matrix">matrix</button>
-          <button class="quick-btn" data-cmd="patents">patents</button>
-          <button class="quick-btn" data-cmd="skills">skills</button>
-          <button class="quick-btn" data-cmd="neofetch">neofetch</button>
-          <button class="quick-btn" data-cmd="clear">clear</button>
+          <button class="quick-btn" data-cmd="help" data-tooltip="Вывести список всех поддерживаемых команд">help</button>
+          <button class="quick-btn" data-cmd="projects" data-tooltip="Вывести список 13 репозиториев со ссылками">projects</button>
+          <button class="quick-btn" data-cmd="matrix" data-tooltip="Запустить полноэкранный ливень зеленых символов Матрицы">matrix</button>
+          <button class="quick-btn" data-cmd="patents" data-tooltip="Показать данные патентов Роспатента">patents</button>
+          <button class="quick-btn" data-cmd="skills" data-tooltip="Показать матрицу технологического стека">skills</button>
+          <button class="quick-btn" data-cmd="neofetch" data-tooltip="Вывести телеметрию и характеристики сервера">neofetch</button>
+          <button class="quick-btn" data-cmd="clear" data-tooltip="Очистить терминал">clear</button>
         </div>
       </div>
     </section>
 
-    <!-- ПОЛНЫЙ КАТАЛОГ ПРОЕКТОВ (BENTO GRID) -->
+    <!-- ИНТЕРАКТИВНАЯ МАТРИЦА КОМПЕТЕНЦИЙ (НОВАЯ ФИЧА) -->
+    <section id="skills-matrix" class="section-container">
+      <div class="section-header">
+        <div class="section-tag">CORE ENGINEERING CAPABILITIES</div>
+        <h2 class="section-title">Матрица инженерных компетенций</h2>
+        <p class="section-desc">
+          Технологический стек, применяемый в научно-исследовательских и промышленных разработках.
+        </p>
+
+        <div class="skills-filter-row">
+          <button class="skill-tab active sound-click" data-skill-cat="all">Все навыки</button>
+          <button class="skill-tab sound-click" data-skill-cat="ai">AI / Machine Learning</button>
+          <button class="skill-tab sound-click" data-skill-cat="backend">Backend & High-Load</button>
+          <button class="skill-tab sound-click" data-skill-cat="sec">Security & Infra</button>
+          <button class="skill-tab sound-click" data-skill-cat="data">Big Data & Storage</button>
+        </div>
+      </div>
+
+      <div class="skills-grid" id="skills-grid">
+        <div class="skill-pill-card solid-card" data-cat="ai">
+          <div class="skill-card-top">
+            <span class="skill-name">PyTorch & WGAN-GP</span>
+            <span class="skill-level">Senior Core</span>
+          </div>
+          <p class="skill-desc">Генеративные состязательные сети, спектральная нормализация, моделирование временных рядов (Seq-ACGAN).</p>
+          <span class="skill-repo-ref">Проекты: ueba-seq-acgan</span>
+        </div>
+
+        <div class="skill-pill-card solid-card" data-cat="ai">
+          <div class="skill-card-top">
+            <span class="skill-name">Quantile Calibration & EVT</span>
+            <span class="skill-level">R&D / Patent</span>
+          </div>
+          <p class="skill-desc">Математическая статистика, теория экстремальных значений, байесовские априорные распределения.</p>
+          <span class="skill-repo-ref">Проекты: ueba-score-calibration</span>
+        </div>
+
+        <div class="skill-pill-card solid-card" data-cat="backend">
+          <div class="skill-card-top">
+            <span class="skill-name">Golang & Concurrency</span>
+            <span class="skill-level">Production</span>
+          </div>
+          <p class="skill-desc">Высоконагруженные демоны сбора метрик, gRPC микросервисы, низкоуровневая обработка сетевых сокетов.</p>
+          <span class="skill-repo-ref">Проекты: sentinel-siem, net-recon-terminal</span>
+        </div>
+
+        <div class="skill-pill-card solid-card" data-cat="backend">
+          <div class="skill-card-top">
+            <span class="skill-name">Python 3.11 & AsyncIO</span>
+            <span class="skill-level">Expert</span>
+          </div>
+          <p class="skill-desc">Асинхронные распределенные парсеры, интеграция с ML-пайплайнами, FastAPI, NumPy, Pandas.</p>
+          <span class="skill-repo-ref">Проекты: omniparse-studio, datapulse-etl</span>
+        </div>
+
+        <div class="skill-pill-card solid-card" data-cat="data">
+          <div class="skill-card-top">
+            <span class="skill-name">ClickHouse & Kafka</span>
+            <span class="skill-level">Advanced</span>
+          </div>
+          <p class="skill-desc">Потоковая аналитика петабайтных логов событий, партиционирование, Materialized Views, векторизация.</p>
+          <span class="skill-repo-ref">Проекты: datapulse-etl, sentinel-siem</span>
+        </div>
+
+        <div class="skill-pill-card solid-card" data-cat="sec">
+          <div class="skill-card-top">
+            <span class="skill-name">Linux Kernel, eBPF & Sec</span>
+            <span class="skill-level">Hardened</span>
+          </div>
+          <p class="skill-desc">Перехват системных вызовов в ядре, UFW, автоматизация Fail2ban, изоляция Docker, Zero-Trust Nginx.</p>
+          <span class="skill-repo-ref">Проекты: sentinel-siem, dev-portfolio-minimal</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ПОЛНЫЙ КАТАЛОГ ПРОЕКТОВ (BENTO GRID С ПЛАВНЫМ ХОВЕРОМ БЕЗ РЫВКОВ) -->
     <section id="projects" class="section-container">
       <div class="section-header">
         <div class="section-tag">PRODUCTION REPOSITORY ECOSYSTEM</div>
@@ -434,7 +528,7 @@
 
       <div class="bento-grid" id="projects-grid">
         <!-- Sentinel SIEM -->
-        <div class="bento-card card-tilt" data-cat="security">
+        <div class="bento-card solid-card" data-cat="security">
           <div class="card-top">
             <span class="card-domain">CYBERSECURITY</span>
             <span class="card-stars">★ Production</span>
@@ -448,7 +542,7 @@
         </div>
 
         <!-- OmniParse Studio -->
-        <div class="bento-card card-tilt" data-cat="ai">
+        <div class="bento-card solid-card" data-cat="ai">
           <div class="card-top">
             <span class="card-domain">DATA PROCESSING</span>
             <span class="card-stars">★ High-Speed</span>
@@ -462,7 +556,7 @@
         </div>
 
         <!-- DataPulse ETL -->
-        <div class="bento-card card-tilt" data-cat="ai">
+        <div class="bento-card solid-card" data-cat="ai">
           <div class="card-top">
             <span class="card-domain">DATA PLATFORM</span>
             <span class="card-stars">★ Streaming</span>
@@ -476,7 +570,7 @@
         </div>
 
         <!-- Net Recon Terminal -->
-        <div class="bento-card card-tilt" data-cat="security">
+        <div class="bento-card solid-card" data-cat="security">
           <div class="card-top">
             <span class="card-domain">SECURITY AUDIT</span>
             <span class="card-stars">★ CLI Suite</span>
@@ -490,7 +584,7 @@
         </div>
 
         <!-- ShopFlow Telegram -->
-        <div class="bento-card card-tilt" data-cat="fullstack">
+        <div class="bento-card solid-card" data-cat="fullstack">
           <div class="card-top">
             <span class="card-domain">BOT PLATFORM</span>
             <span class="card-stars">★ Commercial</span>
@@ -504,7 +598,7 @@
         </div>
 
         <!-- NoteFlow Workspace -->
-        <div class="bento-card card-tilt" data-cat="fullstack">
+        <div class="bento-card solid-card" data-cat="fullstack">
           <div class="card-top">
             <span class="card-domain">WORKSPACE</span>
             <span class="card-stars">★ Markdown</span>
@@ -518,7 +612,7 @@
         </div>
 
         <!-- Prompt Vault Studio -->
-        <div class="bento-card card-tilt" data-cat="ai">
+        <div class="bento-card solid-card" data-cat="ai">
           <div class="card-top">
             <span class="card-domain">LLM TOOLING</span>
             <span class="card-stars">★ AI Ops</span>
@@ -532,7 +626,7 @@
         </div>
 
         <!-- Aura Estates Aggregator -->
-        <div class="bento-card card-tilt" data-cat="fullstack">
+        <div class="bento-card solid-card" data-cat="fullstack">
           <div class="card-top">
             <span class="card-domain">AGGREGATOR</span>
             <span class="card-stars">★ Analytics</span>
@@ -546,7 +640,7 @@
         </div>
 
         <!-- Aurora Telemetry SaaS -->
-        <div class="bento-card card-tilt" data-cat="tools">
+        <div class="bento-card solid-card" data-cat="tools">
           <div class="card-top">
             <span class="card-domain">OBSERVABILITY</span>
             <span class="card-stars">★ Metrics</span>
@@ -560,7 +654,7 @@
         </div>
 
         <!-- DevPulse Event Hub -->
-        <div class="bento-card card-tilt" data-cat="tools">
+        <div class="bento-card solid-card" data-cat="tools">
           <div class="card-top">
             <span class="card-domain">MICROSERVICES</span>
             <span class="card-stars">★ Events</span>
@@ -574,13 +668,13 @@
         </div>
 
         <!-- Dev Portfolio Minimal -->
-        <div class="bento-card card-tilt" data-cat="tools">
+        <div class="bento-card solid-card" data-cat="tools">
           <div class="card-top">
             <span class="card-domain">CORE DESIGN</span>
             <span class="card-stars">★ Fast Web</span>
           </div>
           <h3 class="card-name">ProTesla Core Web</h3>
-          <p class="card-desc">Исходный код данного портфолио: чистый нативный веб без раздутых зависимостей, 60fps canvas, Web Audio и защита Nginx.</p>
+          <p class="card-desc">Исходный код данного портала: нативный Vanilla JS без раздутых библиотек, 60fps canvas, Web Audio, Let's Encrypt и Nginx Hardening.</p>
           <div class="card-tags">
             <span class="tag">Vanilla JS</span><span class="tag">Web Audio</span><span class="tag">Nginx Core</span><span class="tag">HTML5 Canvas</span>
           </div>
@@ -600,7 +694,7 @@
       </div>
 
       <div class="patents-grid">
-        <div class="patent-card card-tilt">
+        <div class="patent-card solid-card">
           <div class="patent-icon">📜</div>
           <div class="patent-body">
             <div class="patent-reg">РОСПАТЕНТ · СВИДЕТЕЛЬСТВО №2026614488</div>
@@ -614,7 +708,7 @@
           </div>
         </div>
 
-        <div class="patent-card card-tilt">
+        <div class="patent-card solid-card">
           <div class="patent-icon">📜</div>
           <div class="patent-body">
             <div class="patent-reg">РОСПАТЕНТ · СВИДЕТЕЛЬСТВО №2026614489</div>
@@ -632,7 +726,7 @@
 
     <!-- КОНТАКТЫ & СВЯЗЬ -->
     <section id="contact" class="section-container contact-section">
-      <div class="contact-box card-tilt">
+      <div class="contact-box solid-card">
         <div class="contact-header">
           <span class="section-tag">INITIATE TRANSMISSION</span>
           <h2 class="contact-title">Готовы обсудить R&D или архитектуру?</h2>
@@ -642,17 +736,17 @@
         </div>
 
         <div class="contact-links">
-          <a href="https://github.com/NikolaCloud" target="_blank" rel="noopener" class="contact-pill sound-click">
+          <a href="https://github.com/NikolaCloud" target="_blank" rel="noopener" class="contact-pill sound-click" data-tooltip="Открыть профиль разработчика на GitHub">
             <span class="pill-icon">📦</span>
             <span class="pill-label">GitHub:</span>
             <span class="pill-val">@NikolaCloud</span>
           </a>
-          <a href="https://t.me/NikolaCloud" target="_blank" rel="noopener" class="contact-pill sound-click">
+          <a href="https://t.me/NikolaCloud" target="_blank" rel="noopener" class="contact-pill sound-click" data-tooltip="Написать напрямую в Telegram">
             <span class="pill-icon">✈️</span>
             <span class="pill-label">Telegram:</span>
             <span class="pill-val">@NikolaCloud</span>
           </a>
-          <button id="copy-email-btn" class="contact-pill sound-click" title="Нажмите, чтобы скопировать">
+          <button id="copy-email-btn" class="contact-pill sound-click" data-tooltip="Нажмите, чтобы скопировать email адрес">
             <span class="pill-icon">✉️</span>
             <span class="pill-label">Email:</span>
             <span class="pill-val">dev@protesla.online</span>
@@ -668,6 +762,7 @@
   <footer class="hud-footer">
     <div class="footer-container">
       <div class="footer-left">
+        <img src="assets/logo.svg" alt="ProTesla" class="footer-logo-svg">
         <span class="footer-logo">PROTESLA.ONLINE</span>
         <span class="footer-copy">© 2026 NikolaCloud. Все права защищены.</span>
       </div>
@@ -699,6 +794,9 @@
       </div>
     </div>
   </div>
+
+  <!-- Всплывающая подсказка (Unified Floating Tooltip) -->
+  <div id="floating-tooltip" class="floating-tooltip hidden"></div>
 
   <script src="app.js"></script>
 </body>
