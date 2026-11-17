@@ -1,0 +1,54 @@
+<svg width="420" height="195" viewBox="0 0 420 195" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="195" rx="10" fill="#0D1117" stroke="#30363D" stroke-width="1.2"/>
+  <g transform="translate(25, 30)">
+    <text x="0" y="0" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="700" fill="#38BDF8">Most Used Languages</text>
+  </g>
+  <!-- Progress Bar -->
+  <g transform="translate(25, 52)">
+    <mask id="bar-mask">
+      <rect width="370" height="10" rx="5" fill="#FFFFFF"/>
+    </mask>
+    <g mask="url(#bar-mask)">
+      <rect x="0" y="0" width="244" height="10" fill="#3572A5"/>
+      <rect x="244" y="0" width="65" height="10" fill="#E34C26"/>
+      <rect x="309" y="0" width="42" height="10" fill="#F1E05A"/>
+      <rect x="351" y="0" width="15" height="10" fill="#563D7C"/>
+      <rect x="366" y="0" width="4" height="10" fill="#89E051"/>
+    </g>
+  </g>
+  <!-- Legend Grid -->
+  <g transform="translate(25, 85)">
+    <!-- Column 1 -->
+    <g transform="translate(0, 0)">
+      <circle cx="6" cy="6" r="5" fill="#3572A5"/>
+      <text x="20" y="10" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" fill="#C9D1D9" font-weight="600">Python</text>
+      <text x="165" y="10" font-family="'JetBrains Mono', monospace" font-size="12" fill="#8B949E" text-anchor="end">65.8%</text>
+    </g>
+    <g transform="translate(0, 28)">
+      <circle cx="6" cy="6" r="5" fill="#E34C26"/>
+      <text x="20" y="10" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" fill="#C9D1D9" font-weight="600">HTML5</text>
+      <text x="165" y="10" font-family="'JetBrains Mono', monospace" font-size="12" fill="#8B949E" text-anchor="end">17.6%</text>
+    </g>
+    <g transform="translate(0, 56)">
+      <circle cx="6" cy="6" r="5" fill="#F1E05A"/>
+      <text x="20" y="10" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" fill="#C9D1D9" font-weight="600">JavaScript</text>
+      <text x="165" y="10" font-family="'JetBrains Mono', monospace" font-size="12" fill="#8B949E" text-anchor="end">11.4%</text>
+    </g>
+    <!-- Column 2 -->
+    <g transform="translate(195, 0)">
+      <circle cx="6" cy="6" r="5" fill="#563D7C"/>
+      <text x="20" y="10" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" fill="#C9D1D9" font-weight="600">CSS3</text>
+      <text x="165" y="10" font-family="'JetBrains Mono', monospace" font-size="12" fill="#8B949E" text-anchor="end">4.1%</text>
+    </g>
+    <g transform="translate(195, 28)">
+      <circle cx="6" cy="6" r="5" fill="#89E051"/>
+      <text x="20" y="10" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" fill="#C9D1D9" font-weight="600">Shell / Batch</text>
+      <text x="165" y="10" font-family="'JetBrains Mono', monospace" font-size="12" fill="#8B949E" text-anchor="end">1.1%</text>
+    </g>
+    <g transform="translate(195, 56)">
+      <circle cx="6" cy="6" r="5" fill="#38BDF8"/>
+      <text x="20" y="10" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" fill="#C9D1D9" font-weight="600">SQL &amp; JSON</text>
+      <text x="165" y="10" font-family="'JetBrains Mono', monospace" font-size="12" fill="#8B949E" text-anchor="end">Schemas</text>
+    </g>
+  </g>
+</svg>

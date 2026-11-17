@@ -1,181 +1,705 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="emerald">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Александр | Senior Python & Fullstack Developer</title>
-  <link rel="stylesheet" href="static/css/style.css">
+  <title>ProTesla Labs // Инженерный R&D и Системы Искусственного Интеллекта</title>
+  <meta name="description" content="Лаборатория кибернетических систем, поведенческого анализа (UEBA), квантильной калибровки рисков и защищенной High-Load инфраструктуры.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
+  <!-- Интерактивный физический Canvas фона -->
+  <canvas id="particle-canvas"></canvas>
 
-  <!-- Navbar -->
-  <nav class="navbar">
-    <div class="container nav-inner">
-      <a href="#" class="logo"><span>&lt;/&gt;</span> alex.dev</a>
-      <div class="nav-links">
-        <a href="#about">Обо мне</a>
-        <a href="#projects">Проекты</a>
-        <a href="#skills">Стек</a>
-        <a href="#contact" class="btn-hire">Связаться</a>
+  <!-- Радиальная подсветка мыши -->
+  <div class="mouse-glow" id="mouseGlow"></div>
+
+  <!-- Верхняя строка телеметрии и навигации (Cyber HUD Bar) -->
+  <header class="hud-header">
+    <div class="hud-container">
+      <div class="brand-zone">
+        <a href="#hero" class="brand-logo">
+          <span class="logo-symbol">⚡</span>
+          <span class="logo-text">PROTESLA<span class="logo-dim">//LABS</span></span>
+        </a>
+        <div class="live-pill">
+          <span class="pulsing-dot"></span>
+          <span class="live-label">NODE:</span>
+          <span id="server-ping">24ms</span>
+        </div>
+      </div>
+
+      <nav class="hud-nav">
+        <a href="#hero" class="nav-item scramble-link">Главная</a>
+        <a href="#simulator" class="nav-item scramble-link">UEBA Симулятор</a>
+        <a href="#flagships" class="nav-item scramble-link">R&D Проекты</a>
+        <a href="#terminal-section" class="nav-item scramble-link">Терминал</a>
+        <a href="#projects" class="nav-item scramble-link">Портфолио</a>
+        <a href="#patents" class="nav-item scramble-link">Патенты</a>
+        <a href="#contact" class="nav-item scramble-link">Контакты</a>
+      </nav>
+
+      <div class="hud-controls">
+        <!-- Кнопка звука с эквалайзером -->
+        <button id="sfx-toggle" class="hud-btn sfx-btn" title="Переключить звуковые эффекты Web Audio">
+          <span class="sfx-icon">
+            <span class="eq-bar bar-1"></span>
+            <span class="eq-bar bar-2"></span>
+            <span class="eq-bar bar-3"></span>
+          </span>
+          <span class="sfx-text">SFX: ВКЛ</span>
+        </button>
+
+        <!-- Переключатель тем -->
+        <div class="theme-switcher" title="Цветовая матрица интерфейса">
+          <button class="theme-dot active" data-theme="emerald" title="Cyber Emerald"></button>
+          <button class="theme-dot" data-theme="amber" title="Tesla Amber"></button>
+          <button class="theme-dot" data-theme="cyan" title="Cold Cyan"></button>
+          <button class="theme-dot" data-theme="violet" title="Neural Violet"></button>
+        </div>
+
+        <!-- Кнопка Command Palette -->
+        <button id="cmd-k-trigger" class="hud-btn cmd-btn">
+          <kbd>Ctrl</kbd>+<kbd>K</kbd>
+        </button>
       </div>
     </div>
-  </nav>
+  </header>
 
-  <!-- Hero Section -->
-  <section class="container hero" id="about">
-    <div>
-      <div class="status-pill">● Доступен для новых проектов и контрактов</div>
-      <h1>Разрабатываю <span class="gradient-text">высоконагруженные бэкенды</span>, парсеры и ботов</h1>
-      <p>Специализируюсь на Python, FastAPI, асинхронных архитектурах, системах безопасности и автоматизации бизнес-процессов.</p>
-      <div class="hero-actions">
-        <a href="#projects" class="btn-primary">Смотреть проекты</a>
-        <a href="https://github.com" target="_blank" class="btn-secondary">GitHub Профиль ↗</a>
-      </div>
-    </div>
+  <main class="page-content">
 
-    <!-- Interactive Terminal -->
-    <div class="terminal-window">
-      <div class="term-bar">
-        <div class="term-dot r"></div>
-        <div class="term-dot y"></div>
-        <div class="term-dot g"></div>
-        <div class="term-title">alex@macos-m3: ~ (zsh)</div>
-      </div>
-      <div class="term-body" id="termOutput">
-        <span class="term-green">✔ System initialized:</span> Python 3.11, Docker, Linux Core<br>
-        <span class="term-blue">dev@portfolio:~$</span> whoami<br>
-        Александр — Software Engineer (Backend / Data / Security)<br>
-        <span class="term-blue">dev@portfolio:~$</span> cat status.txt<br>
-        7+ крупных законченных систем. Введите <span class="term-green">help</span> для списка команд.
-      </div>
-      <div class="term-bar" style="border-top: 1px solid rgba(255,255,255,0.08); border-bottom: none;">
-        <span class="term-blue" style="font-size:12px;">$</span>
-        <input type="text" id="termInput" class="term-input" placeholder="Введите команду (help, skills, projects)...">
-      </div>
-    </div>
-  </section>
+    <!-- HERO SECTION -->
+    <section id="hero" class="hero-section">
+      <div class="section-container">
+        <div class="hero-status-row">
+          <span class="tech-badge">
+            <span class="badge-icon">🛡️</span> R&D · MACHINE LEARNING & CYBERSECURITY
+          </span>
+          <div class="clock-badge">
+            <span class="clock-icon">🕒</span>
+            <span id="live-msk-time">10:14:00 MSK</span>
+          </div>
+        </div>
 
-  <!-- Featured Projects -->
-  <section class="container section" id="projects">
-    <div class="sec-header">
-      <h2 class="sec-title">Избранные проекты</h2>
-      <p class="sec-subtitle">Боевые решения с продуманной многослойной архитектурой и тестами</p>
-    </div>
+        <h1 class="hero-title">
+          <span class="title-scramble" data-text="ИНЖЕНЕРИЯ ИСКУССТВЕННОГО ИНТЕЛЛЕКТА">ИНЖЕНЕРИЯ ИСКУССТВЕННОГО ИНТЕЛЛЕКТА</span><br>
+          <span class="gradient-text">& ВЫСОКОНАГРУЖЕННЫХ СИСТЕМ</span>
+        </h1>
 
-    <div class="projects-grid">
-      <!-- Project 1 -->
-      <div class="project-card">
-        <div>
+        <p class="hero-subtitle">
+          Проектирование нейросетевых детекторов поведенческих аномалий (<span class="highlight">UEBA</span>),
+          алгоритмов квантильной калибровки рисков в условиях дрейфа данных, систем на базе
+          <span class="highlight">Seq-ACGAN</span> и защищенных распределенных сервисов.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#simulator" class="btn btn-primary sound-click">
+            <span class="btn-glow"></span>
+            <span class="btn-icon">⚡</span>
+            <span>Запустить UEBA Симулятор</span>
+          </a>
+          <a href="#terminal-section" class="btn btn-secondary sound-click">
+            <span class="btn-icon">💻</span>
+            <span>Открыть HUD Терминал</span>
+          </a>
+          <a href="https://github.com/NikolaCloud" target="_blank" rel="noopener" class="btn btn-outline sound-click">
+            <span class="btn-icon">📦</span>
+            <span>GitHub Репозитории</span>
+          </a>
+        </div>
+
+        <!-- Интерактивная телеметрия счетчиков -->
+        <div class="metrics-grid">
+          <div class="metric-card card-tilt">
+            <div class="metric-num"><span class="counter" data-target="99.4">0</span><span class="metric-unit">%</span></div>
+            <div class="metric-label">AUC-ROC детекции UEBA</div>
+            <div class="metric-sub">Seq-ACGAN + экстремальные квантили</div>
+          </div>
+          <div class="metric-card card-tilt">
+            <div class="metric-num"><span class="counter" data-target="13">0</span><span class="metric-unit">+</span></div>
+            <div class="metric-label">Production Репозиториев</div>
+            <div class="metric-sub">Open-Source R&D экосистема</div>
+          </div>
+          <div class="metric-card card-tilt">
+            <div class="metric-num"><span class="counter" data-target="2">0</span><span class="metric-unit">ПАТЕНТА</span></div>
+            <div class="metric-label">Свидетельства Роспатента</div>
+            <div class="metric-sub">Гос. регистрация алгоритмов ЭВМ</div>
+          </div>
+          <div class="metric-card card-tilt">
+            <div class="metric-num"><span class="counter" data-target="100">0</span><span class="metric-unit">%</span></div>
+            <div class="metric-label">Суверенитет и Безопасность</div>
+            <div class="metric-sub">Собственная инфраструктура & Nginx Core</div>
+          </div>
+        </div>
+
+        <!-- Бегущая строка стека (Live Ticker) -->
+        <div class="tech-ticker-wrap">
+          <div class="tech-ticker">
+            <span>⚡ PYTORCH</span>
+            <span>✦ SEQ-ACGAN</span>
+            <span>⚡ GOLANG</span>
+            <span>✦ QUANTILE CALIBRATION</span>
+            <span>⚡ CLICKHOUSE</span>
+            <span>✦ EBPF TELEMETRY</span>
+            <span>⚡ DOCKER HARDENING</span>
+            <span>✦ ISOLATION FOREST</span>
+            <span>⚡ HIGH-LOAD ARCHITECTURE</span>
+            <span>✦ FAIL2BAN AUTOMATION</span>
+            <span>⚡ PYTORCH</span>
+            <span>✦ SEQ-ACGAN</span>
+            <span>⚡ GOLANG</span>
+            <span>✦ QUANTILE CALIBRATION</span>
+            <span>⚡ CLICKHOUSE</span>
+            <span>✦ EBPF TELEMETRY</span>
+            <span>⚡ DOCKER HARDENING</span>
+            <span>✦ ISOLATION FOREST</span>
+            <span>⚡ HIGH-LOAD ARCHITECTURE</span>
+            <span>✦ FAIL2BAN AUTOMATION</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ИНТЕРАКТИВНЫЙ СИМУЛЯТОР UEBA & КАЛИБРОВКИ РИСКОВ (КИЛЛЕР-ФИЧА) -->
+    <section id="simulator" class="section-container simulator-section">
+      <div class="section-header">
+        <div class="section-tag">LIVE INTERACTIVE PLAYGROUND</div>
+        <h2 class="section-title">Симулятор нейросетевого детектора UEBA</h2>
+        <p class="section-desc">
+          Поэкспериментируйте с параметрами сессии пользователя в реальном времени. Движок рассчитывает синтетический
+          скоринг аномальности нейросети, применяет динамическую квантильную калибровку и выносит вердикт безопасности.
+        </p>
+      </div>
+
+      <div class="simulator-card card-tilt">
+        <div class="sim-grid">
+          <!-- Левая колонка: Органы управления (Слайдеры) -->
+          <div class="sim-controls">
+            <div class="sim-group">
+              <div class="sim-label-row">
+                <label for="slider-entropy">Энтропия поведения (Deviations)</label>
+                <span class="sim-val" id="val-entropy">0.24</span>
+              </div>
+              <input type="range" id="slider-entropy" min="0" max="1" step="0.01" value="0.24" class="sim-range">
+              <span class="sim-hint">Разброс интервалов команд, отклонение от привычного ритма</span>
+            </div>
+
+            <div class="sim-group">
+              <div class="sim-label-row">
+                <label for="slider-time">Смещение времени активности (Time Shift)</label>
+                <span class="sim-val" id="val-time">0.10</span>
+              </div>
+              <input type="range" id="slider-time" min="0" max="1" step="0.01" value="0.10" class="sim-range">
+              <span class="sim-hint">Нетипичное время входа (глубокая ночь, выходные)</span>
+            </div>
+
+            <div class="sim-group">
+              <div class="sim-label-row">
+                <label for="slider-syscalls">Аномальность системных вызовов (Syscalls)</label>
+                <span class="sim-val" id="val-syscalls">0.15</span>
+              </div>
+              <input type="range" id="slider-syscalls" min="0" max="1" step="0.01" value="0.15" class="sim-range">
+              <span class="sim-hint">Неизвестные бинарные файлы, доступ к /etc/shadow, дескрипторы</span>
+            </div>
+
+            <div class="sim-group toggle-group">
+              <label class="toggle-switch">
+                <input type="checkbox" id="toggle-escalation">
+                <span class="toggle-slider"></span>
+              </label>
+              <div class="toggle-text">
+                <span class="toggle-title">Имитировать попытку Privilege Escalation (sudo exploit)</span>
+                <span class="toggle-sub">Резкий скачок в критический квантиль распределения</span>
+              </div>
+            </div>
+
+            <div class="sim-presets">
+              <span class="preset-label">Быстрые сценарии:</span>
+              <button class="preset-btn" data-preset="normal">Обычный сотрудник</button>
+              <button class="preset-btn" data-preset="dev-night">Разработчик (ночной релиз)</button>
+              <button class="preset-btn" data-preset="apt">APT-атака (Stealth)</button>
+              <button class="preset-btn" data-preset="brute">Брутфорс / Эксплойт</button>
+            </div>
+          </div>
+
+          <!-- Правая колонка: Динамический Радар & Спидометр Угрозы -->
+          <div class="sim-dashboard">
+            <div class="gauge-wrapper">
+              <svg class="gauge-svg" viewBox="0 0 200 120">
+                <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="16" stroke-linecap="round"/>
+                <path id="gauge-fill" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gauge-grad)" stroke-width="16" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="200"/>
+                <defs>
+                  <linearGradient id="gauge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#10b981"/>
+                    <stop offset="50%" stop-color="#f59e0b"/>
+                    <stop offset="100%" stop-color="#ef4444"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="gauge-needle-center">
+                <div class="gauge-score-value" id="sim-score-display">0.21</div>
+                <div class="gauge-score-label">CALIBRATED RISK SCORE</div>
+              </div>
+            </div>
+
+            <div class="sim-verdict-box" id="sim-verdict-card">
+              <div class="verdict-header">
+                <span class="verdict-indicator" id="verdict-dot"></span>
+                <span class="verdict-status" id="verdict-text">ЛЕГИТИМНАЯ АКТИВНОСТЬ (NORMAL)</span>
+              </div>
+              <p class="verdict-detail" id="verdict-detail">
+                Поведение полностью укладывается в доверительный интервал ролевого профиля (p > 0.85).
+              </p>
+            </div>
+
+            <!-- Живой вывод телеметрии модели -->
+            <div class="sim-telemetry-hud">
+              <div class="tel-row">
+                <span class="tel-k">Базовый скоринг Seq-ACGAN:</span>
+                <span class="tel-v" id="tel-raw-score">0.18</span>
+              </div>
+              <div class="tel-row">
+                <span class="tel-k">Пользовательский квантиль:</span>
+                <span class="tel-v" id="tel-user-q">14.2%</span>
+              </div>
+              <div class="tel-row">
+                <span class="tel-k">Ролевой квантиль:</span>
+                <span class="tel-v" id="tel-role-q">16.8%</span>
+              </div>
+              <div class="tel-row">
+                <span class="tel-k">Статус калибратора:</span>
+                <span class="tel-v highlight-green" id="tel-engine-status">ONLINE (CONVERGED)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ФЛАГМАНСКИЕ R&D РАЗРАБОТКИ -->
+    <section id="flagships" class="section-container">
+      <div class="section-header">
+        <div class="section-tag">FLAGSHIP RESEARCH & INTELLECTUAL PROPERTY</div>
+        <h2 class="section-title">Флагманские научные разработки</h2>
+        <p class="section-desc">
+          Специализированные решения в сфере информационной безопасности, сочетающие состязательные
+          генеративные сети (GAN) и передовые методы математической статистики.
+        </p>
+      </div>
+
+      <div class="flagships-grid">
+        <!-- Флагман 1: Seq-ACGAN -->
+        <article class="flagship-card card-tilt">
+          <div class="flagship-badge">NEURAL ARCHITECTURE · R&D</div>
+          <h3 class="flagship-title">UEBA Seq-ACGAN: Детекция аномалий последовательностей</h3>
+          <p class="flagship-text">
+            Генеративно-состязательная сеть с механизмом вспомогательного классификатора (Auxiliary Classifier GAN),
+            адаптированная для моделирования дискретно-временных последовательностей действий пользователей в enterprise-сетях.
+          </p>
+
+          <div class="interactive-preview">
+            <img src="assets/ueba_dashboard.png" alt="UEBA Seq-ACGAN Архитектура" class="preview-img modal-zoomable" title="Нажмите для увеличения схемы">
+            <span class="zoom-badge">🔍 Кликните для зума</span>
+          </div>
+
+          <div class="tech-tag-list">
+            <span class="tag">PyTorch</span>
+            <span class="tag">Sequence GAN</span>
+            <span class="tag">LSTM Generator</span>
+            <span class="tag">Spectral Norm</span>
+            <span class="tag">WGAN-GP</span>
+            <span class="tag">Python 3.11</span>
+          </div>
+
+          <div class="flagship-footer">
+            <a href="https://github.com/NikolaCloud/ueba-seq-acgan" target="_blank" rel="noopener" class="btn btn-outline sound-click">
+              <span>Репозиторий на GitHub →</span>
+            </a>
+            <span class="patent-ref">Запатентованный алгоритм</span>
+          </div>
+        </article>
+
+        <!-- Флагман 2: Score Calibration -->
+        <article class="flagship-card card-tilt">
+          <div class="flagship-badge">MATHEMATICAL STATISTICS · CALIBRATION</div>
+          <h3 class="flagship-title">UEBA Score Calibration: Квантильная калибровка</h3>
+          <p class="flagship-text">
+            Двухуровневая система калибровки сырых скорингов аномальности. Устраняет проблему ложных срабатываний
+            за счет динамического пересчета пользовательских и ролевых квантилей с байесовским регуляризатором.
+          </p>
+
+          <div class="interactive-preview">
+            <img src="assets/calibration_diagram.png" alt="Схема калибровки квантилей" class="preview-img modal-zoomable" title="Нажмите для увеличения схемы">
+            <span class="zoom-badge">🔍 Кликните для зума</span>
+          </div>
+
+          <div class="math-formula-box">
+            <code>p_calibrated = α · p_user(s) + (1 - α) · p_role(s),  α = min(1, N_user / N_threshold)</code>
+          </div>
+
+          <div class="tech-tag-list">
+            <span class="tag">Quantile Mapping</span>
+            <span class="tag">Kernel Density</span>
+            <span class="tag">Bayesian Prior</span>
+            <span class="tag">Extreme Values (EVT)</span>
+            <span class="tag">NumPy</span>
+          </div>
+
+          <div class="flagship-footer">
+            <a href="https://github.com/NikolaCloud/ueba-score-calibration" target="_blank" rel="noopener" class="btn btn-outline sound-click">
+              <span>Репозиторий на GitHub →</span>
+            </a>
+            <span class="patent-ref">Решение проблемы Cold Start</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ИНТЕРАКТИВНЫЙ HUD ТЕРМИНАЛ (ОБНОВЛЕННЫЙ) -->
+    <section id="terminal-section" class="section-container">
+      <div class="section-header">
+        <div class="section-tag">DEVELOPER HUD CONSOLE</div>
+        <h2 class="section-title">Интерактивный терминал инженера</h2>
+        <p class="section-desc">
+          Управляйте сессией в стиле настоящего Unix HUD. Поддерживаются горячие клавиши, эффекты матрицы и телеметрия.
+        </p>
+      </div>
+
+      <div class="terminal-window card-tilt">
+        <div class="terminal-header">
+          <div class="terminal-dots">
+            <span class="dot dot-red"></span>
+            <span class="dot dot-yellow"></span>
+            <span class="dot dot-green"></span>
+          </div>
+          <div class="terminal-title">nikola@protesla-server:~ (bash 5.2)</div>
+          <div class="terminal-actions">
+            <button id="term-matrix-btn" class="term-tool-btn" title="Включить Matrix Rain">⚡ Matrix Rain</button>
+            <button id="term-clear-btn" class="term-tool-btn" title="Очистить терминал">Очистить</button>
+          </div>
+        </div>
+
+        <div class="terminal-body" id="terminal-body">
+          <canvas id="matrix-canvas" class="matrix-canvas-layer hidden"></canvas>
+          <div id="terminal-output">
+            <div class="term-line banner-line">
+  ____  ____   ___ _____ _____ ____  _        _      _     _     ____  ____  
+ |  _ \|  _ \ / _ \_   _| ____/ ___|| |      / \    | |   / \   | __ )/ ___| 
+ | |_) | |_) | | | || | |  _| \___ \| |     / _ \   | |  / _ \  |  _ \\___ \ 
+ |  __/|  _ <| |_| || | | |___ ___) | |___ / ___ \  | |___/ ___ \| |_) |___) |
+ |_|   |_| \_\\___/ |_| |_____|____/|_____/_/   \_\ |_____/_/   \_\____/|____/ 
+            </div>
+            <div class="term-line success-text">Добро пожаловать в защищенную консоль ProTesla Labs!</div>
+            <div class="term-line dim-text">Введите <span class="highlight">help</span> для списка доступных команд или кликните быстрые кнопки ниже:</div>
+          </div>
+
+          <div class="terminal-input-row">
+            <span class="prompt-symbol">nikola@protesla:~$</span>
+            <input type="text" id="terminal-input" autocomplete="off" spellcheck="false" autofocus placeholder="введите команду (напр: help, projects, matrix, neofetch)...">
+          </div>
+        </div>
+
+        <div class="terminal-quick-cmds">
+          <span class="quick-label">Быстрый вызов:</span>
+          <button class="quick-btn" data-cmd="help">help</button>
+          <button class="quick-btn" data-cmd="projects">projects</button>
+          <button class="quick-btn" data-cmd="matrix">matrix</button>
+          <button class="quick-btn" data-cmd="patents">patents</button>
+          <button class="quick-btn" data-cmd="skills">skills</button>
+          <button class="quick-btn" data-cmd="neofetch">neofetch</button>
+          <button class="quick-btn" data-cmd="clear">clear</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ПОЛНЫЙ КАТАЛОГ ПРОЕКТОВ (BENTO GRID) -->
+    <section id="projects" class="section-container">
+      <div class="section-header">
+        <div class="section-tag">PRODUCTION REPOSITORY ECOSYSTEM</div>
+        <h2 class="section-title">Каталог открытых проектов</h2>
+        <p class="section-desc">
+          Полная линейка прикладных систем: от корпоративных SIEM и сбора телеметрии до высоконагруженных парсеров и Telegram-ботов.
+        </p>
+
+        <!-- Фильтр категорий с тактильным откликом -->
+        <div class="category-filters">
+          <button class="filter-btn active sound-click" data-filter="all">Все проекты (11)</button>
+          <button class="filter-btn sound-click" data-filter="security">Кибербезопасность & SIEM</button>
+          <button class="filter-btn sound-click" data-filter="ai">ИИ & Data Processing</button>
+          <button class="filter-btn sound-click" data-filter="fullstack">Full-Stack & Сервисы</button>
+          <button class="filter-btn sound-click" data-filter="tools">Системные утилиты</button>
+        </div>
+      </div>
+
+      <div class="bento-grid" id="projects-grid">
+        <!-- Sentinel SIEM -->
+        <div class="bento-card card-tilt" data-cat="security">
           <div class="card-top">
-            <span class="badge">Desktop / Automation</span>
-            <span style="font-size:12px; color:#64748b;">v2.4</span>
+            <span class="card-domain">CYBERSECURITY</span>
+            <span class="card-stars">★ Production</span>
           </div>
-          <div class="p-title">OmniParse Studio</div>
-          <div class="p-desc">Многопоточный комплекс парсинга каталогов и мониторинга цен с встроенным антидетектом, ротацией User-Agent и экспортом в XLSX/CSV/JSON.</div>
-          <div class="stack-tags">
-            <span class="stack-tag">Python</span>
-            <span class="stack-tag">CustomTkinter</span>
-            <span class="stack-tag">BeautifulSoup4</span>
-            <span class="stack-tag">SQLite</span>
+          <h3 class="card-name">Sentinel SIEM</h3>
+          <p class="card-desc">Корпоративная система сбора и корреляции событий безопасности в реальном времени. Автоматический разбор журналов и алертинг.</p>
+          <div class="card-tags">
+            <span class="tag">Go</span><span class="tag">eBPF</span><span class="tag">Elastic</span><span class="tag">Docker</span>
           </div>
+          <a href="https://github.com/NikolaCloud/sentinel-siem" target="_blank" rel="noopener" class="card-action">Смотреть код на GitHub →</a>
         </div>
-        <div>
-          <a href="#" class="card-link">Подробнее о решении →</a>
+
+        <!-- OmniParse Studio -->
+        <div class="bento-card card-tilt" data-cat="ai">
+          <div class="card-top">
+            <span class="card-domain">DATA PROCESSING</span>
+            <span class="card-stars">★ High-Speed</span>
+          </div>
+          <h3 class="card-name">OmniParse Studio</h3>
+          <p class="card-desc">Высокопроизводительный асинхронный движок парсинга и нормализации неструктурированных данных из распределенных источников.</p>
+          <div class="card-tags">
+            <span class="tag">Python 3.11</span><span class="tag">AsyncIO</span><span class="tag">Playwright</span><span class="tag">Redis</span>
+          </div>
+          <a href="https://github.com/NikolaCloud/omniparse-studio" target="_blank" rel="noopener" class="card-action">Смотреть код на GitHub →</a>
+        </div>
+
+        <!-- DataPulse ETL -->
+        <div class="bento-card card-tilt" data-cat="ai">
+          <div class="card-top">
+            <span class="card-domain">DATA PLATFORM</span>
+            <span class="card-stars">★ Streaming</span>
+          </div>
+          <h3 class="card-name">DataPulse ETL</h3>
+          <p class="card-desc">Потоковый конвейер пакетной и непрерывной обработки телеметрии с интеграцией ClickHouse и верификацией целостности схем.</p>
+          <div class="card-tags">
+            <span class="tag">ClickHouse</span><span class="tag">Kafka</span><span class="tag">Python</span><span class="tag">DuckDB</span>
+          </div>
+          <a href="https://github.com/NikolaCloud/datapulse-etl" target="_blank" rel="noopener" class="card-action">Смотреть код на GitHub →</a>
+        </div>
+
+        <!-- Net Recon Terminal -->
+        <div class="bento-card card-tilt" data-cat="security">
+          <div class="card-top">
+            <span class="card-domain">SECURITY AUDIT</span>
+            <span class="card-stars">★ CLI Suite</span>
+          </div>
+          <h3 class="card-name">Net Recon Terminal</h3>
+          <p class="card-desc">Утилита разведки сетевой периферии, сканирования портов, инспекции сертификатов и поиска уязвимостей конфигураций сервисов.</p>
+          <div class="card-tags">
+            <span class="tag">Go</span><span class="tag">Raw Sockets</span><span class="tag">Nmap Scripting</span>
+          </div>
+          <a href="https://github.com/NikolaCloud/net-recon-terminal" target="_blank" rel="noopener" class="card-action">Смотреть код на GitHub →</a>
+        </div>
+
+        <!-- ShopFlow Telegram -->
+        <div class="bento-card card-tilt" data-cat="fullstack">
+          <div class="card-top">
+            <span class="card-domain">BOT PLATFORM</span>
+            <span class="card-stars">★ Commercial</span>
+          </div>
+          <h3 class="card-name">ShopFlow Telegram</h3>
+          <p class="card-desc">Enterprise Telegram-бот для коммерции с каталогом, корзиной, приемом оплат и интеграцией со складскими системами.</p>
+          <div class="card-tags">
+            <span class="tag">Aiogram 3</span><span class="tag">PostgreSQL</span><span class="tag">Telegram API</span>
+          </div>
+          <a href="https://github.com/NikolaCloud/shopflow-telegram" target="_blank" rel="noopener" class="card-action">Смотреть код на GitHub →</a>
+        </div>
+
+        <!-- NoteFlow Workspace -->
+        <div class="bento-card card-tilt" data-cat="fullstack">
+          <div class="card-top">
+            <span class="card-domain">WORKSPACE</span>
+            <span class="card-stars">★ Markdown</span>
+          </div>
+          <h3 class="card-name">NoteFlow Workspace</h3>
+          <p class="card-desc">Минималистичное веб-пространство для заметок и технической документации с поддержкой LaTeX формул и мгновенным поиском.</p>
+          <div class="card-tags">
+            <span class="tag">TypeScript</span><span class="tag">React</span><span class="tag">KaTeX</span><span class="tag">IndexedDB</span>
+          </div>
+          <a href="https://github.com/NikolaCloud/noteflow-workspace" target="_blank" rel="noopener" class="card-action">Смотреть код на GitHub →</a>
+        </div>
+
+        <!-- Prompt Vault Studio -->
+        <div class="bento-card card-tilt" data-cat="ai">
+          <div class="card-top">
+            <span class="card-domain">LLM TOOLING</span>
+            <span class="card-stars">★ AI Ops</span>
+          </div>
+          <h3 class="card-name">Prompt Vault Studio</h3>
+          <p class="card-desc">Интерфейс версионирования, A/B-тестирования и бенчмаркинга системных промптов больших языковых моделей (LLM).</p>
+          <div class="card-tags">
+            <span class="tag">FastAPI</span><span class="tag">OpenAI API</span><span class="tag">Vue 3</span><span class="tag">SQLite</span>
+          </div>
+          <a href="https://github.com/NikolaCloud/prompt-vault-studio" target="_blank" rel="noopener" class="card-action">Смотреть код на GitHub →</a>
+        </div>
+
+        <!-- Aura Estates Aggregator -->
+        <div class="bento-card card-tilt" data-cat="fullstack">
+          <div class="card-top">
+            <span class="card-domain">AGGREGATOR</span>
+            <span class="card-stars">★ Analytics</span>
+          </div>
+          <h3 class="card-name">Aura Estates</h3>
+          <p class="card-desc">Агрегатор объявлений недвижимости с картой инфраструктуры, дедупликацией объектов и расчетом инвестиционной привлекательности.</p>
+          <div class="card-tags">
+            <span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Leaflet</span><span class="tag">PostGIS</span>
+          </div>
+          <a href="https://github.com/NikolaCloud/aura-estates-aggregator" target="_blank" rel="noopener" class="card-action">Смотреть код на GitHub →</a>
+        </div>
+
+        <!-- Aurora Telemetry SaaS -->
+        <div class="bento-card card-tilt" data-cat="tools">
+          <div class="card-top">
+            <span class="card-domain">OBSERVABILITY</span>
+            <span class="card-stars">★ Metrics</span>
+          </div>
+          <h3 class="card-name">Aurora Telemetry</h3>
+          <p class="card-desc">Легковесный агент мониторинга серверов (CPU, RAM, диски, сеть) с передачей метрик по gRPC в централизованную панель.</p>
+          <div class="card-tags">
+            <span class="tag">Go</span><span class="tag">gRPC</span><span class="tag">TimescaleDB</span><span class="tag">Grafana</span>
+          </div>
+          <a href="https://github.com/NikolaCloud/aurora-telemetry-saas" target="_blank" rel="noopener" class="card-action">Смотреть код на GitHub →</a>
+        </div>
+
+        <!-- DevPulse Event Hub -->
+        <div class="bento-card card-tilt" data-cat="tools">
+          <div class="card-top">
+            <span class="card-domain">MICROSERVICES</span>
+            <span class="card-stars">★ Events</span>
+          </div>
+          <h3 class="card-name">DevPulse Event Hub</h3>
+          <p class="card-desc">Шина событий и диспетчер вебхуков для микросервисной архитектуры с гарантированной доставкой сообщений (at-least-once).</p>
+          <div class="card-tags">
+            <span class="tag">Go</span><span class="tag">RabbitMQ</span><span class="tag">Redis Streams</span>
+          </div>
+          <a href="https://github.com/NikolaCloud/devpulse-event-hub" target="_blank" rel="noopener" class="card-action">Смотреть код на GitHub →</a>
+        </div>
+
+        <!-- Dev Portfolio Minimal -->
+        <div class="bento-card card-tilt" data-cat="tools">
+          <div class="card-top">
+            <span class="card-domain">CORE DESIGN</span>
+            <span class="card-stars">★ Fast Web</span>
+          </div>
+          <h3 class="card-name">ProTesla Core Web</h3>
+          <p class="card-desc">Исходный код данного портфолио: чистый нативный веб без раздутых зависимостей, 60fps canvas, Web Audio и защита Nginx.</p>
+          <div class="card-tags">
+            <span class="tag">Vanilla JS</span><span class="tag">Web Audio</span><span class="tag">Nginx Core</span><span class="tag">HTML5 Canvas</span>
+          </div>
+          <a href="https://github.com/NikolaCloud/dev-portfolio-minimal" target="_blank" rel="noopener" class="card-action">Смотреть код на GitHub →</a>
         </div>
       </div>
+    </section>
 
-      <!-- Project 2 -->
-      <div class="project-card">
-        <div>
-          <div class="card-top">
-            <span class="badge" style="background:rgba(239, 68, 68, 0.1); color:#f87171; border-color:rgba(239, 68, 68, 0.2);">Cybersecurity / SOC</span>
-            <span style="font-size:12px; color:#64748b;">Enterprise</span>
-          </div>
-          <div class="p-title">Sentinel SIEM Platform</div>
-          <div class="p-desc">Система анализа журналов Linux auth.log, Nginx и Windows EventLog. Корреляция атак Brute-Force, SQLi и маппинг с матрицей MITRE ATT&CK.</div>
-          <div class="stack-tags">
-            <span class="stack-tag">Python</span>
-            <span class="stack-tag">SOC Engine</span>
-            <span class="stack-tag">MITRE ATT&CK</span>
-            <span class="stack-tag">Regex Core</span>
-          </div>
-        </div>
-        <div>
-          <a href="#" class="card-link">Подробнее о решении →</a>
-        </div>
+    <!-- ПАТЕНТЫ И СВИДЕТЕЛЬСТВА РОСПАТЕНТА -->
+    <section id="patents" class="section-container">
+      <div class="section-header">
+        <div class="section-tag">LEGAL INTELLECTUAL ASSETS</div>
+        <h2 class="section-title">Свидетельства о государственной регистрации</h2>
+        <p class="section-desc">
+          Официальные свидетельства Федеральной службы по интеллектуальной собственности (Роспатент) на программы для ЭВМ.
+        </p>
       </div>
 
-      <!-- Project 3 -->
-      <div class="project-card">
-        <div>
-          <div class="card-top">
-            <span class="badge" style="background:rgba(52, 211, 153, 0.1); color:#34d399; border-color:rgba(52, 211, 153, 0.2);">E-Commerce / Bots</span>
-            <span style="font-size:12px; color:#64748b;">Platform</span>
-          </div>
-          <div class="p-title">ShopFlow Telegram Platform</div>
-          <div class="p-desc">Многомодульная коммерческая платформа: Telegram-бот, WebApp Mini App витрина, корзина, промокоды и веб-админка на FastAPI.</div>
-          <div class="stack-tags">
-            <span class="stack-tag">Python</span>
-            <span class="stack-tag">Telebot</span>
-            <span class="stack-tag">FastAPI</span>
-            <span class="stack-tag">WebApp API</span>
+      <div class="patents-grid">
+        <div class="patent-card card-tilt">
+          <div class="patent-icon">📜</div>
+          <div class="patent-body">
+            <div class="patent-reg">РОСПАТЕНТ · СВИДЕТЕЛЬСТВО №2026614488</div>
+            <h3 class="patent-title">Программный комплекс генеративно-состязательной детекции аномалий поведения пользователей (UEBA Seq-ACGAN)</h3>
+            <p class="patent-desc">
+              Защищенный метод моделирования профилей доверенной активности персонала с автоматическим выявлением компрометации учетных записей.
+            </p>
+            <div class="patent-meta">
+              <span>Правообладатель: Автор</span> · <span>Статус: Зарегистрировано в Реестре программ для ЭВМ</span>
+            </div>
           </div>
         </div>
-        <div>
-          <a href="#" class="card-link">Подробнее о решении →</a>
+
+        <div class="patent-card card-tilt">
+          <div class="patent-icon">📜</div>
+          <div class="patent-body">
+            <div class="patent-reg">РОСПАТЕНТ · СВИДЕТЕЛЬСТВО №2026614489</div>
+            <h3 class="patent-title">Модуль адаптивной квантильной калибровки оценок аномальности в динамических гетерогенных сетях</h3>
+            <p class="patent-desc">
+              Алгоритм калибровки вероятностных оценок в условиях редких событий, обеспечивающий снижение False Positives на 68%.
+            </p>
+            <div class="patent-meta">
+              <span>Правообладатель: Автор</span> · <span>Статус: Зарегистрировано в Реестре программ для ЭВМ</span>
+            </div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <!-- Project 4 -->
-      <div class="project-card">
-        <div>
-          <div class="card-top">
-            <span class="badge" style="background:rgba(168, 85, 247, 0.1); color:#c084fc; border-color:rgba(168, 85, 247, 0.2);">Data Engineering</span>
-            <span style="font-size:12px; color:#64748b;">Pipeline</span>
-          </div>
-          <div class="p-title">DataPulse ETL & BI</div>
-          <div class="p-desc">Автоматизированный DAG-пайплайн с контролем качества данных Data Quality SLA, скользящими MA(7) и Z-Score детекцией аномалий.</div>
-          <div class="stack-tags">
-            <span class="stack-tag">Streamlit</span>
-            <span class="stack-tag">Plotly</span>
-            <span class="stack-tag">Pandas</span>
-            <span class="stack-tag">SQLite DWH</span>
-          </div>
+    <!-- КОНТАКТЫ & СВЯЗЬ -->
+    <section id="contact" class="section-container contact-section">
+      <div class="contact-box card-tilt">
+        <div class="contact-header">
+          <span class="section-tag">INITIATE TRANSMISSION</span>
+          <h2 class="contact-title">Готовы обсудить R&D или архитектуру?</h2>
+          <p class="contact-desc">
+            Открыт для интересных технологических вызовов, разработки наукоемких систем искусственного интеллекта и защищенной серверной инфраструктуры.
+          </p>
         </div>
-        <div>
-          <a href="#" class="card-link">Подробнее о решении →</a>
+
+        <div class="contact-links">
+          <a href="https://github.com/NikolaCloud" target="_blank" rel="noopener" class="contact-pill sound-click">
+            <span class="pill-icon">📦</span>
+            <span class="pill-label">GitHub:</span>
+            <span class="pill-val">@NikolaCloud</span>
+          </a>
+          <a href="https://t.me/NikolaCloud" target="_blank" rel="noopener" class="contact-pill sound-click">
+            <span class="pill-icon">✈️</span>
+            <span class="pill-label">Telegram:</span>
+            <span class="pill-val">@NikolaCloud</span>
+          </a>
+          <button id="copy-email-btn" class="contact-pill sound-click" title="Нажмите, чтобы скопировать">
+            <span class="pill-icon">✉️</span>
+            <span class="pill-label">Email:</span>
+            <span class="pill-val">dev@protesla.online</span>
+            <span class="copy-hint" id="copy-status">(копировать)</span>
+          </button>
         </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ФУТЕР -->
+  <footer class="hud-footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <span class="footer-logo">PROTESLA.ONLINE</span>
+        <span class="footer-copy">© 2026 NikolaCloud. Все права защищены.</span>
+      </div>
+      <div class="footer-right">
+        <span class="footer-tech">Engineered with Vanilla JS · Nginx Hardened · High-Performance Core</span>
       </div>
     </div>
-  </section>
-
-  <!-- Contact & Hire -->
-  <section class="container section" id="contact">
-    <div class="contact-box">
-      <div class="contact-info">
-        <h3>Обсудим ваш проект?</h3>
-        <p>Всегда открыт к проектированию бэкенд-систем, автоматизации сбора данных, разработке Telegram-платформ и аудиту безопасности.</p>
-        <div class="contact-item">💬 Telegram: <b>@alex_developer</b></div>
-        <div class="contact-item">🐙 GitHub: <b>github.com/alex-dev</b></div>
-        <div class="contact-item">📍 Локация: <b>Удаленно / Worldwide</b></div>
-      </div>
-
-      <form class="contact-form" id="contactForm">
-        <input type="text" class="form-input" placeholder="Ваше имя" required>
-        <input type="text" class="form-input" placeholder="Telegram @username или Email" required>
-        <textarea class="form-input" placeholder="Краткое описание задачи или проекта..." required></textarea>
-        <button type="submit" class="btn-primary" style="border:none; cursor:pointer;">Отправить сообщение</button>
-      </form>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer container">
-    © 2026 Александр. Спроектировано с упором на производительность и чистый код.
   </footer>
 
-  <script src="static/js/main.js"></script>
+  <!-- МОДАЛЬНОЕ ОКНО ZOOM ДЛЯ ДИАГРАММ -->
+  <div id="image-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <button class="modal-close" id="modal-close-btn">&times;</button>
+      <img id="modal-img" src="" alt="Детальная схема">
+      <div class="modal-caption" id="modal-caption"></div>
+    </div>
+  </div>
+
+  <!-- COMMAND PALETTE (CTRL+K) -->
+  <div id="cmd-palette" class="cmd-palette-overlay hidden">
+    <div class="cmd-palette-window">
+      <div class="cmd-palette-input-row">
+        <span class="cmd-search-icon">🔍</span>
+        <input type="text" id="cmd-palette-input" placeholder="Поиск по разделам, проектам и командам...">
+        <kbd class="cmd-esc-badge">ESC</kbd>
+      </div>
+      <div class="cmd-palette-list" id="cmd-palette-list">
+        <!-- Результаты генерируются динамически через JS -->
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
