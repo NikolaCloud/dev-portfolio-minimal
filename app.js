@@ -1786,4 +1786,45 @@
     });
   }
 
+  // =========================================================================
+  // 18. PRESENTATION VIDEO MODAL CONTROLLER
+  // =========================================================================
+  function initVideoModal() {
+    const videoModal = document.getElementById('video-modal');
+    const videoPlayer = document.getElementById('presentation-video');
+    const closeBtn = document.getElementById('video-modal-close-btn');
+    const openHeroBtn = document.getElementById('btn-hero-watch-video');
+    const openNavBtn = document.getElementById('nav-open-video');
+
+    if (!videoModal || !videoPlayer) return;
+
+    function openModal() {
+      videoModal.classList.remove('hidden');
+      videoPlayer.currentTime = 0;
+      videoPlayer.play().catch(() => {});
+      SFX.click();
+    }
+
+    function closeModal() {
+      videoPlayer.pause();
+      videoModal.classList.add('hidden');
+      SFX.click();
+    }
+
+    if (openHeroBtn) openHeroBtn.addEventListener('click', openModal);
+    if (openNavBtn) openNavBtn.addEventListener('click', openModal);
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+    videoModal.addEventListener('click', (e) => {
+      if (e.target === videoModal) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !videoModal.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
+  }
+  initVideoModal();
+
 })();
