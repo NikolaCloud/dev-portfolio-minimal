@@ -808,6 +808,8 @@
 
   const paletteItems = [
     { title: 'UEBA Симулятор', type: 'РАЗДЕЛ', action: () => location.href = '#simulator' },
+    { title: 'SOC Схватка (Атака vs Детектор)', type: 'РАЗДЕЛ', action: () => location.href = '#soc-battle' },
+    { title: 'Топологический граф нейросети', type: 'РАЗДЕЛ', action: () => location.href = '#neural-graph' },
     { title: 'Флагманские R&D Проекты', type: 'РАЗДЕЛ', action: () => location.href = '#flagships' },
     { title: 'Интерактивный Терминал', type: 'РАЗДЕЛ', action: () => location.href = '#terminal-section' },
     { title: 'Матрица компетенций', type: 'РАЗДЕЛ', action: () => location.href = '#skills-matrix' },
@@ -885,6 +887,439 @@
       if (e.target === cmdPalette) closePalette();
     });
   }
+
+  // =========================================================================
+  // 16. SOC BATTLE STATION ENGINE (ATTACK VS UEBA DETECTOR)
+  // =========================================================================
+  function initSOCBattle() {
+    const radioItems = document.querySelectorAll('.attack-scenario-item');
+    const runBtn = document.getElementById('btn-run-attack');
+    const resetBtn = document.getElementById('btn-reset-attack');
+    const statusBadge = document.getElementById('soc-defense-status');
+    const radarDot = document.querySelector('.soc-radar-dot');
+    const logConsole = document.getElementById('soc-log-stream');
+
+    const reactionEl = document.getElementById('soc-reaction-time');
+    const driftEl = document.getElementById('soc-drift-score');
+    const calibEl = document.getElementById('soc-calibrated-q');
+    const verdictEl = document.getElementById('soc-action-verdict');
+
+    if (!runBtn || !logConsole) return;
+
+    // Radio select visual state
+    radioItems.forEach(item => {
+      item.addEventListener('click', () => {
+        radioItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        const radio = item.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
+        SFX.click();
+      });
+    });
+
+    const scenarios = {
+      'pass-the-hash': {
+        name: 'Pass-the-Hash & Lateral Movement',
+        steps: [
+          { text: '[00:00.02] [INTRUSION] Зафиксирован NTLM-хэш: User "buh_lead" -> Target "DC01.corp.internal"', cls: 'crit-log', delay: 250 },
+          { text: '[00:00.35] [UEBA TELEMETRY] Нетипичный порт: RPC/SMB 445 из сегмента рабочих станций бухгалтерии', cls: 'seq-log', delay: 650 },
+          { text: '[00:00.78] [SEQ-ACGAN] Вычисление расстояния Вассерштейна: W(P_real, P_syn) = 4.82σ', cls: 'calib-log', delay: 1100 },
+          { text: '[00:01.12] [QUANTILE CALIBRATOR] Экстремальный ролевой квантиль: p_calibrated = 0.984 (> τ_crit 0.95)', cls: 'crit-log', delay: 1550 },
+          { text: '[00:01.40] [AUTOMATED DEFENSE] Вердикт: LATERAL_MOVEMENT. Сессия заморожена. eBPF фильтр блокирует сокет.', cls: 'defense-log', delay: 2000 }
+        ],
+        metrics: { time: '18 мс', drift: '+4.82σ', calib: '98.4%', action: 'ISOLATED_IN_EBPF' }
+      },
+
+      'sudo-exploit': {
+        name: 'Privilege Escalation (Sudo CVE-2021-3156)',
+        steps: [
+          { text: '[00:00.01] [INTRUSION] Вызов бинарного файла: /usr/bin/sudoedit -s "\\" 1120_bytes (Heap Overflow)', cls: 'crit-log', delay: 250 },
+          { text: '[00:00.28] [UEBA TELEMETRY] Аномалия системных вызовов: ptrace & execve /bin/sh от пользователя "intern"', cls: 'seq-log', delay: 650 },
+          { text: '[00:00.64] [SEQ-ACGAN] Всплеск энтропии командной строки: S_seq = 0.991 (Базовый профиль роли < 0.20)', cls: 'calib-log', delay: 1100 },
+          { text: '[00:00.95] [QUANTILE CALIBRATOR] Квантильная отсечка: p_calibrated = 0.999 (CRITICAL PRIVILEGE BREACH)', cls: 'crit-log', delay: 1550 },
+          { text: '[00:01.20] [AUTOMATED DEFENSE] Вердикт: ROOT_EXPLOIT_PREVENTED. Процесс SIGKILL. Права сброшены, alert в SIEM.', cls: 'defense-log', delay: 2000 }
+        ],
+        metrics: { time: '14 мс', drift: '+5.90σ', calib: '99.9%', action: 'SIGKILL_PROCESS' }
+      },
+
+      'ssh-brute': {
+        name: 'SSH Distributed Brute-Force',
+        steps: [
+          { text: '[00:00.02] [INTRUSION] Входящий поток: 140 попыток авторизации / сек с 25 IP-адресов Tor/Proxy', cls: 'crit-log', delay: 250 },
+          { text: '[00:00.30] [UEBA TELEMETRY] Временной лаг между попытками: Δt < 12ms (Синтетический ботнет)', cls: 'seq-log', delay: 650 },
+          { text: '[00:00.70] [SEQ-ACGAN] Несоответствие человеческому ритму набора: confidence = 0.002', cls: 'calib-log', delay: 1100 },
+          { text: '[00:01.05] [QUANTILE CALIBRATOR] Превышение лимита сессий: p_calibrated = 0.978', cls: 'crit-log', delay: 1550 },
+          { text: '[00:01.35] [AUTOMATED DEFENSE] Вердикт: BRUTEFORCE_ATTACK. 25 IP отправлены в джейл Fail2ban & UFW drop.', cls: 'defense-log', delay: 2000 }
+        ],
+        metrics: { time: '22 мс', drift: '+4.10σ', calib: '97.8%', action: 'FAIL2BAN_PERMA_BLOCK' }
+      },
+
+      'dns-exfil': {
+        name: 'Stealth DNS Tunneling Exfiltration',
+        steps: [
+          { text: '[00:00.02] [INTRUSION] Аномальный DNS-трафик: Запросы к поддоменам *.c2-exfil.xyz (Base64 payload)', cls: 'crit-log', delay: 250 },
+          { text: '[00:00.38] [UEBA TELEMETRY] Энтропия имен доменов: Shannon Entropy H = 4.95 (норма < 2.8)', cls: 'seq-log', delay: 650 },
+          { text: '[00:00.80] [SEQ-ACGAN] Несоответствие протокольного профиля для пользователя роли "Разработчик"', cls: 'calib-log', delay: 1100 },
+          { text: '[00:01.15] [QUANTILE CALIBRATOR] Байесовский скоринг утечки данных: p_calibrated = 0.989', cls: 'crit-log', delay: 1550 },
+          { text: '[00:01.45] [AUTOMATED DEFENSE] Вердикт: DNS_TUNNEL_EXFILTRATION. DNS Sinkhole активирован. Сокет закрыт.', cls: 'defense-log', delay: 2000 }
+        ],
+        metrics: { time: '19 мс', drift: '+4.95σ', calib: '98.9%', action: 'DNS_SINKHOLE_ACTIVE' }
+      }
+    };
+
+    let battleRunning = false;
+
+    runBtn.addEventListener('click', () => {
+      if (battleRunning) return;
+      battleRunning = true;
+      runBtn.disabled = true;
+
+      const checked = document.querySelector('input[name="attack-vector"]:checked');
+      const key = checked ? checked.value : 'pass-the-hash';
+      const scenario = scenarios[key];
+
+      SFX.click();
+      logConsole.innerHTML = '';
+
+      // Set analyzing state
+      statusBadge.textContent = 'СТАТУС: АНАЛИЗ ИНТРУЗИИ...';
+      statusBadge.className = 'soc-defense-badge analyzing';
+      if (radarDot) radarDot.className = 'soc-radar-dot alert';
+
+      reactionEl.textContent = 'расчет...';
+      driftEl.textContent = 'анализ...';
+      calibEl.textContent = 'калибровка...';
+      verdictEl.textContent = 'PROCESSING';
+      verdictEl.className = 'soc-m-v highlight-green';
+
+      scenario.steps.forEach((step, idx) => {
+        setTimeout(() => {
+          const div = document.createElement('div');
+          div.className = `soc-log-line ${step.cls}`;
+          div.textContent = step.text;
+          logConsole.appendChild(div);
+          logConsole.scrollTop = logConsole.scrollHeight;
+
+          // Sound cues
+          if (idx === 0) SFX.alert();
+          if (idx === 2) SFX.terminal();
+          if (idx === scenario.steps.length - 1) {
+            // Victory / Neutralized
+            SFX.alert();
+            statusBadge.textContent = 'СТАТУС: УГРОЗА НЕЙТРАЛИЗОВАНА';
+            statusBadge.className = 'soc-defense-badge';
+            statusBadge.style.borderColor = '#10b981';
+            statusBadge.style.color = '#10b981';
+            if (radarDot) radarDot.className = 'soc-radar-dot';
+
+            reactionEl.textContent = scenario.metrics.time;
+            driftEl.textContent = scenario.metrics.drift;
+            calibEl.textContent = scenario.metrics.calib;
+            verdictEl.textContent = scenario.metrics.action;
+            verdictEl.className = 'soc-m-v highlight-green';
+
+            battleRunning = false;
+            runBtn.disabled = false;
+          }
+        }, step.delay);
+      });
+    });
+
+    resetBtn.addEventListener('click', () => {
+      SFX.click();
+      logConsole.innerHTML = `
+        <div class="soc-log-line dim-log">[SYSTEM] Ядро UEBA активно. Ролевые бейзлайны: 100% сошлись.</div>
+        <div class="soc-log-line dim-log">[READY] Выберите сценарий интрузии слева и нажмите "Запустить атаку"...</div>
+      `;
+      statusBadge.textContent = 'СТАТУС: МОНИТОРИНГ ОНЛАЙН';
+      statusBadge.className = 'soc-defense-badge';
+      statusBadge.style.borderColor = '';
+      statusBadge.style.color = '';
+      if (radarDot) radarDot.className = 'soc-radar-dot';
+
+      reactionEl.textContent = '—';
+      driftEl.textContent = '—';
+      calibEl.textContent = '—';
+      verdictEl.textContent = 'PASSIVE_LISTEN';
+      verdictEl.className = 'soc-m-v highlight-green';
+      runBtn.disabled = false;
+      battleRunning = false;
+    });
+  }
+
+  initSOCBattle();
+
+  // =========================================================================
+  // 17. NEURAL TOPOLOGY CANVAS ENGINE (SEQ-ACGAN ARCHITECTURE GRAPH)
+  // =========================================================================
+  function initNeuralTopology() {
+    const canvas = document.getElementById('neural-topology-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const inspectorName = document.getElementById('inspector-name');
+    const inspectorDesc = document.getElementById('inspector-desc');
+    const inspectorMath = document.getElementById('inspector-math');
+
+    const btnForward = document.getElementById('btn-pulse-forward');
+    const btnBackprop = document.getElementById('btn-pulse-backprop');
+
+    let width = canvas.width;
+    let height = canvas.height;
+
+    // Topology Nodes Model
+    const layers = [
+      // Layer 0: Input (x-coordinates approx 80)
+      [
+        { id: 'in_dt', label: 'Δt (Интервал)', color: '#38bdf8', dim: 'ℝ¹', act: 'Linear Norm', desc: 'Временной интервал между смежными командами. Выявляет сверхбыстрые скрипты и аномальные паузы.' },
+        { id: 'in_h', label: 'H (Энтропия)', color: '#38bdf8', dim: 'ℝ¹', act: 'Shannon Entropy', desc: 'Статистическая энтропия распределения вызовов системных библиотек и бинарных файлов.' },
+        { id: 'in_c', label: 'c (Вектор роли)', color: '#38bdf8', dim: 'ℝ⁸', act: 'One-Hot Embed', desc: 'Кодирование ролевой принадлежности учетной записи (SysAdmin, Dev, Finance, SecOps).' },
+        { id: 'in_z', label: 'z (Шум GAN)', color: '#38bdf8', dim: 'ℝ¹²⁸', act: 'Gaussian 𝒩(0, I)', desc: 'Латентный шум генератора для моделирования вариативности естественного человеческого поведения.' }
+      ],
+
+      // Layer 1: Dense Projections (x-coordinates approx 280)
+      [
+        { id: 'dense_proj', label: 'Linear Projection', color: '#60a5fa', dim: 'ℝ⁶⁴', act: 'LeakyReLU(0.2)', desc: 'Проекция объединенного вектора признаков и ролевого контекста в единое скрытое пространство.' },
+        { id: 'dense_role', label: 'Role Embedding', color: '#60a5fa', dim: 'ℝ³²', act: 'Dense Embedding', desc: 'Обучаемое плотное представление прав доступа для кондиционирования генератора (AC-GAN).' },
+        { id: 'dense_spec', label: 'Spectral Norm W', color: '#60a5fa', dim: 'ℝ⁶⁴', act: 'Lipschitz Matrix', desc: 'Спектральная нормализация весов для стабилизации состязательного обучения WGAN-GP.' }
+      ],
+
+      // Layer 2: LSTM Core & Temporal Memory (x-coordinates approx 520)
+      [
+        { id: 'lstm_1', label: 'LSTM Cell 1', color: '#a78bfa', dim: 'ℝ¹²⁸', act: 'Tanh / Sigmoid', desc: 'Первый рекуррентный блок, захватывающий локальные последовательности (длина окна T=50).' },
+        { id: 'lstm_2', label: 'LSTM Cell 2', color: '#a78bfa', dim: 'ℝ¹²⁸', act: 'Hidden State h_t', desc: 'Второй рекуррентный уровень, моделирующий долгосрочные сессионные паттерны действий.' },
+        { id: 'lstm_res', label: 'Residual Jump', color: '#a78bfa', dim: 'ℝ¹²⁸', act: 'Add & Norm', desc: 'Сквозное соединение (Skip Connection) для беспрепятственного градиентного потока.' },
+        { id: 'lstm_att', label: 'Temporal Attention', color: '#a78bfa', dim: 'ℝ¹²⁸', act: 'Softmax Weights', desc: 'Механизм внимания к ключевым аномальным моментам в цепочке действий пользователя.' }
+      ],
+
+      // Layer 3: Adversarial Critic & Auxiliary Classifier (x-coordinates approx 780)
+      [
+        { id: 'wgan_val', label: 'Critic Value D(x)', color: '#f59e0b', dim: 'ℝ¹', act: 'Linear Critic', desc: 'Оценка степени реалистичности последовательности в метрике расстояния Вассерштейна.' },
+        { id: 'wgan_gp', label: 'Grad Penalty ∇D', color: '#f59e0b', dim: 'ℝ¹', act: '||∇D||₂ Constraint', desc: 'Штраф за отклонение нормы градиента от единицы. Гарантирует 1-Липшицевость критика.' },
+        { id: 'aux_cls', label: 'Auxiliary Class C(x)', color: '#f59e0b', dim: 'ℝ⁸', act: 'Softmax Multi-Class', desc: 'Вспомогательный классификатор, проверяющий соответствие сессии заявленной роли сотрудника.' }
+      ],
+
+      // Layer 4: Calibrated Risk Verdict (x-coordinates approx 1000)
+      [
+        { id: 'out_p', label: 'p_calib (Risk Score)', color: '#10b981', dim: 'ℝ¹ ∈ [0, 1]', act: 'Bayesian Quantile', desc: 'Итоговая калиброванная оценка риска с учетом пользовательских и ролевых квантилей.' },
+        { id: 'out_match', label: 'Role Alignment %', color: '#10b981', dim: 'ℝ¹ %', act: 'Confidence Metric', desc: 'Степень доверия: подтверждение того, что сессия принадлежит легитимному владельцу учетки.' }
+      ]
+    ];
+
+    // Compute coordinates
+    const nodes = [];
+    const synapses = [];
+    const pulses = [];
+
+    const xCols = [90, 300, 540, 780, 990];
+
+    layers.forEach((layer, lIdx) => {
+      const colX = xCols[lIdx];
+      const count = layer.length;
+      const stepY = (height - 80) / (count + 1);
+
+      layer.forEach((node, nIdx) => {
+        node.x = colX;
+        node.y = 40 + stepY * (nIdx + 1);
+        node.radius = 11;
+        node.layerIdx = lIdx;
+        nodes.push(node);
+      });
+    });
+
+    // Create synapses between adjacent layers
+    for (let l = 0; l < layers.length - 1; l++) {
+      const curr = layers[l];
+      const next = layers[l + 1];
+      curr.forEach(n1 => {
+        next.forEach(n2 => {
+          synapses.push({ from: n1, to: n2 });
+        });
+      });
+    }
+
+    let hoveredNode = null;
+
+    function getThemeAccent() {
+      const t = document.documentElement.getAttribute('data-theme') || 'emerald';
+      switch (t) {
+        case 'amber': return '#f59e0b';
+        case 'cyan': return '#06b6d4';
+        case 'violet': return '#8b5cf6';
+        default: return '#10b981';
+      }
+    }
+
+    function spawnPulse(from, to, reverse = false, color = null) {
+      pulses.push({
+        from: reverse ? to : from,
+        to: reverse ? from : to,
+        progress: 0,
+        speed: 0.018 + Math.random() * 0.012,
+        color: color || (reverse ? '#f59e0b' : '#34d399')
+      });
+    }
+
+    function triggerCascade(reverse = false) {
+      const accent = getThemeAccent();
+      for (let i = 0; i < 28; i++) {
+        setTimeout(() => {
+          const syn = synapses[Math.floor(Math.random() * synapses.length)];
+          spawnPulse(syn.from, syn.to, reverse, reverse ? '#f59e0b' : accent);
+        }, i * 35);
+      }
+    }
+
+    if (btnForward) {
+      btnForward.addEventListener('click', () => {
+        triggerCascade(false);
+        SFX.click();
+      });
+    }
+
+    if (btnBackprop) {
+      btnBackprop.addEventListener('click', () => {
+        triggerCascade(true);
+        SFX.matrix();
+      });
+    }
+
+    // Auto ambient pulses
+    setInterval(() => {
+      if (pulses.length < 18) {
+        const syn = synapses[Math.floor(Math.random() * synapses.length)];
+        spawnPulse(syn.from, syn.to, false);
+      }
+    }, 450);
+
+    // Canvas interactivity
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const mx = (e.clientX - rect.left) * scaleX;
+      const my = (e.clientY - rect.top) * scaleY;
+
+      let nearest = null;
+      let minDist = 26;
+
+      nodes.forEach(n => {
+        const dx = n.x - mx;
+        const dy = n.y - my;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < minDist) {
+          nearest = n;
+          minDist = dist;
+        }
+      });
+
+      if (nearest !== hoveredNode) {
+        hoveredNode = nearest;
+        if (hoveredNode) {
+          inspectorName.textContent = `Узел: ${hoveredNode.label} [Слой ${hoveredNode.layerIdx}]`;
+          inspectorDesc.textContent = hoveredNode.desc;
+          inspectorMath.textContent = `Размерность: ${hoveredNode.dim} | Функция: ${hoveredNode.act}`;
+          SFX.hover();
+        }
+      }
+    });
+
+    canvas.addEventListener('click', () => {
+      if (hoveredNode) {
+        SFX.click();
+        // Fire pulses from this node
+        synapses.filter(s => s.from === hoveredNode).forEach(s => spawnPulse(s.from, s.to));
+        synapses.filter(s => s.to === hoveredNode).forEach(s => spawnPulse(s.from, s.to, true));
+      }
+    });
+
+    // 60 FPS Render Loop
+    function renderTopology() {
+      ctx.clearRect(0, 0, width, height);
+
+      // 1. Draw Synapses
+      synapses.forEach(s => {
+        const isHovered = hoveredNode && (s.from === hoveredNode || s.to === hoveredNode);
+        ctx.beginPath();
+        ctx.moveTo(s.from.x, s.from.y);
+        ctx.lineTo(s.to.x, s.to.y);
+
+        if (isHovered) {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+          ctx.lineWidth = 1.6;
+        } else {
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+          ctx.lineWidth = 0.8;
+        }
+        ctx.stroke();
+      });
+
+      // 2. Draw & Update Pulses
+      for (let i = pulses.length - 1; i >= 0; i--) {
+        const p = pulses[i];
+        p.progress += p.speed;
+
+        if (p.progress >= 1) {
+          pulses.splice(i, 1);
+          continue;
+        }
+
+        const currX = p.from.x + (p.to.x - p.from.x) * p.progress;
+        const currY = p.from.y + (p.to.y - p.from.y) * p.progress;
+
+        ctx.beginPath();
+        ctx.arc(currX, currY, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur = 8;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+
+      // 3. Draw Nodes
+      nodes.forEach(n => {
+        const isHovered = (n === hoveredNode);
+
+        // Outer glow on hover
+        if (isHovered) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, n.radius + 6, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+          ctx.strokeStyle = n.color;
+          ctx.lineWidth = 1.8;
+          ctx.stroke();
+          ctx.fill();
+        }
+
+        // Main node body
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#06090e';
+        ctx.strokeStyle = n.color;
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+        ctx.fill();
+
+        // Core dot
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = n.color;
+        ctx.fill();
+
+        // Node Label
+        ctx.font = '10px "SF Mono", Consolas, monospace';
+        ctx.fillStyle = isHovered ? '#ffffff' : '#94a3b8';
+        ctx.textAlign = 'left';
+        ctx.fillText(n.label, n.x + 16, n.y + 3.5);
+      });
+
+      requestAnimationFrame(renderTopology);
+    }
+
+    renderTopology();
+  }
+
+  initNeuralTopology();
 
   // =========================================================================
   // 15. COPY EMAIL TO CLIPBOARD

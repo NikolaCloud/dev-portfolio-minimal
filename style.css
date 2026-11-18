@@ -1727,3 +1727,351 @@ body {
 
 .cmd-item-title { font-weight: 600; font-size: 0.9rem; }
 .cmd-item-type { font-family: var(--font-mono); font-size: 0.72rem; color: var(--accent); }
+
+/* =====================================================================
+   SOC BATTLE STATION STYLES
+   ===================================================================== */
+.soc-battle-card {
+  padding: 2.2rem;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.88) 0%, rgba(6, 8, 13, 0.98) 100%);
+  border: 1px solid var(--border-focus);
+}
+
+.soc-battle-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 2rem;
+  align-items: stretch;
+}
+
+@media (max-width: 960px) {
+  .soc-battle-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.soc-panel-title {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+}
+
+.attack-scenario-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.attack-scenario-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem 1.15rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.attack-scenario-item:hover {
+  border-color: var(--border-focus);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.attack-scenario-item.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+.attack-scenario-item input[type="radio"] {
+  margin-top: 0.25rem;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.scenario-info {
+  flex-grow: 1;
+}
+
+.scenario-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  margin-bottom: 0.25rem;
+}
+
+.scenario-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 0.45rem;
+}
+
+.scenario-meta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.scenario-meta span {
+  color: var(--accent-light);
+}
+
+.soc-action-row {
+  display: flex;
+  gap: 0.85rem;
+  margin-top: 1.5rem;
+}
+
+/* SOC Terminal Panel */
+.soc-terminal-panel {
+  background: #04060a;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+}
+
+.soc-terminal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.soc-term-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.soc-radar-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse-glow 1.5s infinite ease-in-out;
+}
+
+.soc-radar-dot.alert {
+  background: #ef4444;
+  box-shadow: 0 0 12px #ef4444;
+}
+
+.soc-term-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.soc-defense-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid var(--accent);
+  color: var(--accent-light);
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+.soc-defense-badge.threat {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #fca5a5;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+}
+
+.soc-defense-badge.analyzing {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+  color: #fde68a;
+}
+
+.soc-log-console {
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 0.95rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  min-height: 230px;
+  max-height: 230px;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.soc-log-console::-webkit-scrollbar {
+  width: 6px;
+}
+.soc-log-console::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+.soc-log-line {
+  margin-bottom: 0.35rem;
+  word-break: break-word;
+}
+
+.dim-log { color: var(--text-dim); }
+.crit-log { color: #f87171; font-weight: 700; }
+.seq-log { color: var(--accent-light); }
+.calib-log { color: #fde68a; }
+.defense-log { color: #6ee7b7; font-weight: 700; }
+
+.soc-metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 0.85rem;
+}
+
+.soc-m-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 0.45rem 0.65rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.soc-m-k {
+  color: var(--text-dim);
+  font-size: 0.68rem;
+}
+
+.soc-m-v {
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.82rem;
+  margin-top: 0.15rem;
+}
+
+/* =====================================================================
+   NEURAL TOPOLOGY CANVAS STYLES
+   ===================================================================== */
+.neural-graph-card {
+  padding: 2.2rem;
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.85) 0%, rgba(6, 8, 13, 0.95) 100%);
+  border: 1px solid var(--border-focus);
+}
+
+.neural-graph-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.neural-layers-legend {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--text-muted);
+}
+
+.legend-color {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.color-input { background: #38bdf8; box-shadow: 0 0 6px #38bdf8; }
+.color-lstm { background: #a78bfa; box-shadow: 0 0 6px #a78bfa; }
+.color-wgan { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; }
+.color-output { background: #10b981; box-shadow: 0 0 6px #10b981; }
+
+.neural-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.pulse-icon {
+  font-size: 0.85rem;
+}
+
+.neural-canvas-wrap {
+  width: 100%;
+  background: #04070c;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+#neural-topology-canvas {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 340px;
+  cursor: crosshair;
+}
+
+.neuron-inspector {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 1.15rem 1.4rem;
+  margin-top: 1.25rem;
+  transition: var(--transition-fast);
+}
+
+.inspector-badge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+
+.inspector-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin: 0.35rem 0;
+  color: var(--text-main);
+}
+
+.inspector-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.inspector-math {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--accent-light);
+  margin-top: 0.4rem;
+}

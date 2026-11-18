@@ -20,15 +20,13 @@
           <img src="assets/logo.svg" alt="ProTesla Logo" class="brand-emblem-svg">
           <span class="logo-text">PROTESLA<span class="logo-dim">//LABS</span></span>
         </a>
-        <div class="live-pill" data-tooltip="Статус сервера: Узел активен и защищен Nginx + Fail2ban">
-          <span class="pulsing-dot"></span>
-          <span class="live-label">NODE ONLINE</span>
-        </div>
       </div>
 
       <nav class="hud-nav">
         <a href="#hero" class="nav-item scramble-link">Главная</a>
         <a href="#simulator" class="nav-item scramble-link">UEBA Симулятор</a>
+        <a href="#soc-battle" class="nav-item scramble-link">SOC Схватка</a>
+        <a href="#neural-graph" class="nav-item scramble-link">Граф Сети</a>
         <a href="#flagships" class="nav-item scramble-link">R&D Проекты</a>
         <a href="#terminal-section" class="nav-item scramble-link">Терминал</a>
         <a href="#skills-matrix" class="nav-item scramble-link">Компетенции</a>
@@ -274,7 +272,160 @@
       </div>
     </section>
 
-    <!-- ФЛАГМАНСКИЕ R&D РАЗРАБОТКИ + ИНТЕРАКТИВНЫЙ КОД -->
+    <!-- ИНТЕРАКТИВНАЯ СХВАТКА: АТАКА VS ДЕТЕКТОР UEBA (SOC BATTLE STATION) -->
+    <section id="soc-battle" class="section-container soc-battle-section">
+      <div class="section-header">
+        <div class="section-tag">REAL-TIME THREAT NEUTRALIZATION · SOC BATTLE</div>
+        <h2 class="section-title">Схватка: Атака vs Детектор UEBA</h2>
+        <p class="section-desc">
+          Выберите сценарий боевой атаки из арсенала злоумышленников и запустите симуляцию.
+          Наблюдайте, как нейросетевая модель Seq-ACGAN и квантильный калибратор выявляют аномалию
+          в потоке действий и блокируют сессию за доли секунды.
+        </p>
+      </div>
+
+      <div class="soc-battle-card solid-card">
+        <div class="soc-battle-grid">
+          <!-- Левая панель: выбор сценария атаки -->
+          <div class="soc-scenario-panel">
+            <div class="soc-panel-title">ВЫБЕРИТЕ ВЕКТОР ИНТРУЗИИ:</div>
+
+            <div class="attack-scenario-list">
+              <label class="attack-scenario-item active">
+                <input type="radio" name="attack-vector" value="pass-the-hash" checked>
+                <div class="scenario-info">
+                  <div class="scenario-name">Pass-the-Hash & Lateral Movement</div>
+                  <div class="scenario-desc">Кража NTLM-хэша администратора и попытка скрытного проброса сессии к контроллеру домена.</div>
+                  <div class="scenario-meta"><span>Метка роли:</span> Бухгалтерия → <span>Цель:</span> Active Directory RPC</div>
+                </div>
+              </label>
+
+              <label class="attack-scenario-item">
+                <input type="radio" name="attack-vector" value="sudo-exploit">
+                <div class="scenario-info">
+                  <div class="scenario-name">Privilege Escalation (Sudo CVE)</div>
+                  <div class="scenario-desc">Переполнение буфера в sudo (CVE-2021-3156) для мгновенного захвата прав суперпользователя root.</div>
+                  <div class="scenario-meta"><span>Метка роли:</span> Стажер → <span>Вызовы:</span> /bin/sudo, ptrace</div>
+                </div>
+              </label>
+
+              <label class="attack-scenario-item">
+                <input type="radio" name="attack-vector" value="ssh-brute">
+                <div class="scenario-info">
+                  <div class="scenario-name">SSH Distributed Brute-Force</div>
+                  <div class="scenario-desc">Многопоточный перебор учетных записей по словарю с 25 распределенных прокси-узлов.</div>
+                  <div class="scenario-meta"><span>Метка роли:</span> Аноним → <span>Интенсивность:</span> 140 попыток/сек</div>
+                </div>
+              </label>
+
+              <label class="attack-scenario-item">
+                <input type="radio" name="attack-vector" value="dns-exfil">
+                <div class="scenario-info">
+                  <div class="scenario-name">Stealth DNS Tunneling Exfiltration</div>
+                  <div class="scenario-desc">Скрытная фрагментация и выгрузка базы данных в Base64 через поддомены DNS-запросов.</div>
+                  <div class="scenario-meta"><span>Метка роли:</span> Разработчик → <span>Энтропия:</span> +4.9σ от нормы</div>
+                </div>
+              </label>
+            </div>
+
+            <div class="soc-action-row">
+              <button id="btn-run-attack" class="btn btn-primary sound-click" data-tooltip="Запустить выбранный сценарий боевой атаки">
+                <span class="btn-icon">⚔️</span>
+                <span>Запустить атаку</span>
+              </button>
+              <button id="btn-reset-attack" class="btn btn-outline sound-click" data-tooltip="Сбросить состояние SOC станции">
+                <span>Сброс</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Правая панель: живой лог SOC и индикаторы нейтрализации -->
+          <div class="soc-terminal-panel">
+            <div class="soc-terminal-top">
+              <div class="soc-term-header-left">
+                <span class="soc-radar-dot"></span>
+                <span class="soc-term-label">SOC RADAR & UEBA TELEMETRY STREAM</span>
+              </div>
+              <div class="soc-defense-badge" id="soc-defense-status">СТАТУС: МОНИТОРИНГ ОНЛАЙН</div>
+            </div>
+
+            <!-- Консоль логов атаки -->
+            <div class="soc-log-console" id="soc-log-stream">
+              <div class="soc-log-line dim-log">[SYSTEM] Ядро UEBA активно. Ролевые бейзлайны: 100% сошлись.</div>
+              <div class="soc-log-line dim-log">[READY] Выберите сценарий интрузии слева и нажмите "Запустить атаку"...</div>
+            </div>
+
+            <!-- Метрики нейтрализации -->
+            <div class="soc-metrics-strip">
+              <div class="soc-m-box">
+                <span class="soc-m-k">Скорость реакции:</span>
+                <span class="soc-m-v" id="soc-reaction-time">—</span>
+              </div>
+              <div class="soc-m-box">
+                <span class="soc-m-k">Дрейф вектора:</span>
+                <span class="soc-m-v" id="soc-drift-score">—</span>
+              </div>
+              <div class="soc-m-box">
+                <span class="soc-m-k">Калиброванный квантиль:</span>
+                <span class="soc-m-v" id="soc-calibrated-q">—</span>
+              </div>
+              <div class="soc-m-box">
+                <span class="soc-m-k">Действие защиты:</span>
+                <span class="soc-m-v highlight-green" id="soc-action-verdict">PASSIVE_LISTEN</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ИНТЕРАКТИВНЫЙ ТОПОЛОГИЧЕСКИЙ ГРАФ СЕТИ SEQ-ACGAN -->
+    <section id="neural-graph" class="section-container neural-graph-section">
+      <div class="section-header">
+        <div class="section-tag">NEURAL TOPOLOGY & LATENT DYNAMICS · R&D</div>
+        <h2 class="section-title">Интерактивный топологический граф нейросети Seq-ACGAN</h2>
+        <p class="section-desc">
+          Прямая визуализация слоев и распространения сигналов внутри состязательной генеративной архитектуры.
+          Наведите курсор на нейроны для инспекции тензорных размерностей или запустите импульс данных для наблюдения Forward Pass.
+        </p>
+      </div>
+
+      <div class="neural-graph-card solid-card">
+        <!-- Верхняя строка управления графом -->
+        <div class="neural-graph-header">
+          <div class="neural-layers-legend">
+            <span class="legend-item"><span class="legend-color color-input"></span>Вход (Input)</span>
+            <span class="legend-item"><span class="legend-color color-lstm"></span>LSTM Скрытый слой</span>
+            <span class="legend-item"><span class="legend-color color-wgan"></span>WGAN-GP Дискриминатор</span>
+            <span class="legend-item"><span class="legend-color color-output"></span>Калиброванный выход</span>
+          </div>
+
+          <div class="neural-actions">
+            <button id="btn-pulse-forward" class="hud-btn sound-click" data-tooltip="Запустить генерацию и прогон импульса данных через все слои">
+              <span class="pulse-icon">⚡</span>
+              <span>Импульс (Forward Pass)</span>
+            </button>
+            <button id="btn-pulse-backprop" class="hud-btn sound-click" data-tooltip="Симуляция обратного распространения ошибки WGAN-GP">
+              <span class="pulse-icon">🔄</span>
+              <span>Градиентный спуск (Backprop)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Интерактивный Canvas -->
+        <div class="neural-canvas-wrap">
+          <canvas id="neural-topology-canvas" width="1100" height="340"></canvas>
+        </div>
+
+        <!-- Инспектор выбранного нейрона -->
+        <div class="neuron-inspector" id="neuron-inspector">
+          <div class="inspector-badge">ИНСПЕКТОР АКТИВНОГО НЕЙРОНА:</div>
+          <div class="inspector-title" id="inspector-name">Выберите нейрон кликом или наведите мышь на узел графа</div>
+          <div class="inspector-desc" id="inspector-desc">Наведите курсор на узлы топологии выше, чтобы изучить математическое назначение слоя, размерности тензоров и функцию активации.</div>
+          <div class="inspector-math" id="inspector-math">Размерность: — | Активация: —</div>
+        </div>
+      </div>
+    </section>
     <section id="flagships" class="section-container">
       <div class="section-header">
         <div class="section-tag">FLAGSHIP RESEARCH & INTELLECTUAL PROPERTY</div>
