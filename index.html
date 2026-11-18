@@ -23,16 +23,79 @@
       </div>
 
       <nav class="hud-nav">
-        <a href="#hero" class="nav-item scramble-link">Главная</a>
-        <a href="#simulator" class="nav-item scramble-link">UEBA Симулятор</a>
-        <a href="#soc-battle" class="nav-item scramble-link">SOC Схватка</a>
-        <a href="#neural-graph" class="nav-item scramble-link">Граф Сети</a>
-        <a href="#flagships" class="nav-item scramble-link">R&D Проекты</a>
-        <a href="#terminal-section" class="nav-item scramble-link">Терминал</a>
-        <a href="#skills-matrix" class="nav-item scramble-link">Компетенции</a>
-        <a href="#projects" class="nav-item scramble-link">Портфолио</a>
-        <a href="#patents" class="nav-item scramble-link">Патенты</a>
-        <a href="#contact" class="nav-item scramble-link">Контакты</a>
+        <a href="#hero" class="nav-item">Главная</a>
+
+        <!-- Выпадающее меню R&D Симуляторы -->
+        <div class="nav-dropdown">
+          <button class="nav-item nav-dropdown-btn">
+            <span>R&D Симуляторы</span>
+            <span class="dropdown-arrow">▾</span>
+          </button>
+          <div class="dropdown-menu">
+            <a href="#simulator" class="dropdown-item">
+              <span class="dropdown-icon">⚡</span>
+              <div class="dropdown-text">
+                <span class="dropdown-title">UEBA Симулятор</span>
+                <span class="dropdown-sub">Параметрическая квантильная калибровка</span>
+              </div>
+            </a>
+            <a href="#soc-battle" class="dropdown-item">
+              <span class="dropdown-icon">⚔️</span>
+              <div class="dropdown-text">
+                <span class="dropdown-title">SOC Схватка</span>
+                <span class="dropdown-sub">Визуальный киберполигон и перехват атак</span>
+              </div>
+            </a>
+            <a href="#neural-graph" class="dropdown-item">
+              <span class="dropdown-icon">🧠</span>
+              <div class="dropdown-text">
+                <span class="dropdown-title">Граф нейросети</span>
+                <span class="dropdown-sub">Топология слоев и латентная динамика Seq-ACGAN</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Выпадающее меню Разработки -->
+        <div class="nav-dropdown">
+          <button class="nav-item nav-dropdown-btn">
+            <span>Разработки</span>
+            <span class="dropdown-arrow">▾</span>
+          </button>
+          <div class="dropdown-menu">
+            <a href="#flagships" class="dropdown-item">
+              <span class="dropdown-icon">🔬</span>
+              <div class="dropdown-text">
+                <span class="dropdown-title">Флагманские R&D</span>
+                <span class="dropdown-sub">Seq-ACGAN и Score Calibration</span>
+              </div>
+            </a>
+            <a href="#projects" class="dropdown-item">
+              <span class="dropdown-icon">📦</span>
+              <div class="dropdown-text">
+                <span class="dropdown-title">Каталог проектов</span>
+                <span class="dropdown-sub">11 открытых репозиториев (SIEM, ETL, Bots)</span>
+              </div>
+            </a>
+            <a href="#terminal-section" class="dropdown-item">
+              <span class="dropdown-icon">💻</span>
+              <div class="dropdown-text">
+                <span class="dropdown-title">HUD Терминал</span>
+                <span class="dropdown-sub">Unix-консоль разработчика и Matrix Rain</span>
+              </div>
+            </a>
+            <a href="#skills-matrix" class="dropdown-item">
+              <span class="dropdown-icon">🧩</span>
+              <div class="dropdown-text">
+                <span class="dropdown-title">Компетенции</span>
+                <span class="dropdown-sub">Матрица навыков и стек технологий</span>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <a href="#patents" class="nav-item">Патенты</a>
+        <a href="#contact" class="nav-item">Контакты</a>
       </nav>
 
       <div class="hud-controls">
@@ -272,68 +335,132 @@
       </div>
     </section>
 
-    <!-- ИНТЕРАКТИВНАЯ СХВАТКА: АТАКА VS ДЕТЕКТОР UEBA (SOC BATTLE STATION) -->
+    <!-- ИНТЕРАКТИВНАЯ СХВАТКА: АТАКА VS ДЕТЕКТОР UEBA (ВИЗУАЛЬНЫЙ КИБЕРПОЛИГОН) -->
     <section id="soc-battle" class="section-container soc-battle-section">
       <div class="section-header">
-        <div class="section-tag">REAL-TIME THREAT NEUTRALIZATION · SOC BATTLE</div>
+        <div class="section-tag">INTERACTIVE CYBER RANGE · THREAT NEUTRALIZATION</div>
         <h2 class="section-title">Схватка: Атака vs Детектор UEBA</h2>
         <p class="section-desc">
-          Выберите сценарий боевой атаки из арсенала злоумышленников и запустите симуляцию.
-          Наблюдайте, как нейросетевая модель Seq-ACGAN и квантильный калибратор выявляют аномалию
-          в потоке действий и блокируют сессию за доли секунды.
+          Наглядная симуляция перехвата кибератак в реальном времени. Наблюдайте на радаре, как нейросеть
+          Seq-ACGAN и eBPF-фильтры перехватывают эксплойты до нанесения ущерба инфраструктуре.
         </p>
       </div>
 
       <div class="soc-battle-card solid-card">
+        <!-- 1. Интерактивный Canvas-радар перехвата атаки -->
+        <div class="soc-radar-wrapper">
+          <div class="soc-radar-legend">
+            <span class="radar-tag tag-attacker"><span class="dot-red"></span>Атакующий узел</span>
+            <span class="radar-tag tag-shield"><span class="dot-cyan"></span>Контур защиты UEBA & eBPF</span>
+            <span class="radar-tag tag-target"><span class="dot-green"></span>Защищаемые серверы</span>
+          </div>
+          <canvas id="soc-radar-canvas" width="1080" height="150"></canvas>
+        </div>
+
+        <!-- 2. Интерактивный 5-этапный конвейер нейтрализации -->
+        <div class="soc-pipeline-track">
+          <div class="pipeline-step" data-step="1">
+            <div class="step-num">01</div>
+            <div class="step-label">Внедрение</div>
+            <div class="step-sub">Инъекция эксплойта</div>
+            <div class="step-status">Ожидание</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+
+          <div class="pipeline-step" data-step="2">
+            <div class="step-num">02</div>
+            <div class="step-label">Телеметрия eBPF</div>
+            <div class="step-sub">Перехват системных вызовов</div>
+            <div class="step-status">Ожидание</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+
+          <div class="pipeline-step" data-step="3">
+            <div class="step-num">03</div>
+            <div class="step-label">Seq-ACGAN</div>
+            <div class="step-sub">Анализ дрейфа вектора</div>
+            <div class="step-status">Ожидание</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+
+          <div class="pipeline-step" data-step="4">
+            <div class="step-num">04</div>
+            <div class="step-label">Квантили EVT</div>
+            <div class="step-sub">Калибровка риска</div>
+            <div class="step-status">Ожидание</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+
+          <div class="pipeline-step" data-step="5">
+            <div class="step-num">05</div>
+            <div class="step-label">Изоляция</div>
+            <div class="step-sub">Автоматический Drop</div>
+            <div class="step-status">Ожидание</div>
+          </div>
+        </div>
+
         <div class="soc-battle-grid">
-          <!-- Левая панель: выбор сценария атаки -->
+          <!-- Левая панель: выбор сценария и инспектор пейлоада -->
           <div class="soc-scenario-panel">
             <div class="soc-panel-title">ВЫБЕРИТЕ ВЕКТОР ИНТРУЗИИ:</div>
 
             <div class="attack-scenario-list">
-              <label class="attack-scenario-item active">
+              <label class="attack-scenario-item active" data-scenario="pass-the-hash">
                 <input type="radio" name="attack-vector" value="pass-the-hash" checked>
                 <div class="scenario-info">
                   <div class="scenario-name">Pass-the-Hash & Lateral Movement</div>
-                  <div class="scenario-desc">Кража NTLM-хэша администратора и попытка скрытного проброса сессии к контроллеру домена.</div>
-                  <div class="scenario-meta"><span>Метка роли:</span> Бухгалтерия → <span>Цель:</span> Active Directory RPC</div>
+                  <div class="scenario-desc">Кража NTLM-хэша администратора и попытка скрытного проброса сессии к контроллеру домена DC01.</div>
+                  <div class="scenario-meta"><span>Роль:</span> Бухгалтерия → <span>Аномалия:</span> RPC / SMB 445 в ядро сети</div>
                 </div>
               </label>
 
-              <label class="attack-scenario-item">
+              <label class="attack-scenario-item" data-scenario="sudo-exploit">
                 <input type="radio" name="attack-vector" value="sudo-exploit">
                 <div class="scenario-info">
-                  <div class="scenario-name">Privilege Escalation (Sudo CVE)</div>
-                  <div class="scenario-desc">Переполнение буфера в sudo (CVE-2021-3156) для мгновенного захвата прав суперпользователя root.</div>
-                  <div class="scenario-meta"><span>Метка роли:</span> Стажер → <span>Вызовы:</span> /bin/sudo, ptrace</div>
+                  <div class="scenario-name">Privilege Escalation (Sudo CVE-2021-3156)</div>
+                  <div class="scenario-desc">Переполнение буфера в sudoedit для мгновенного захвата прав суперпользователя root.</div>
+                  <div class="scenario-meta"><span>Роль:</span> Стажер → <span>Аномалия:</span> execve(/bin/sh), ptrace</div>
                 </div>
               </label>
 
-              <label class="attack-scenario-item">
+              <label class="attack-scenario-item" data-scenario="ssh-brute">
                 <input type="radio" name="attack-vector" value="ssh-brute">
                 <div class="scenario-info">
                   <div class="scenario-name">SSH Distributed Brute-Force</div>
                   <div class="scenario-desc">Многопоточный перебор учетных записей по словарю с 25 распределенных прокси-узлов.</div>
-                  <div class="scenario-meta"><span>Метка роли:</span> Аноним → <span>Интенсивность:</span> 140 попыток/сек</div>
+                  <div class="scenario-meta"><span>Роль:</span> Аноним → <span>Аномалия:</span> Лаг &lt; 12мс (Синтетический ботнет)</div>
                 </div>
               </label>
 
-              <label class="attack-scenario-item">
+              <label class="attack-scenario-item" data-scenario="dns-exfil">
                 <input type="radio" name="attack-vector" value="dns-exfil">
                 <div class="scenario-info">
                   <div class="scenario-name">Stealth DNS Tunneling Exfiltration</div>
                   <div class="scenario-desc">Скрытная фрагментация и выгрузка базы данных в Base64 через поддомены DNS-запросов.</div>
-                  <div class="scenario-meta"><span>Метка роли:</span> Разработчик → <span>Энтропия:</span> +4.9σ от нормы</div>
+                  <div class="scenario-meta"><span>Роль:</span> Разработчик → <span>Аномалия:</span> Энтропия Шеннона H=4.95</div>
                 </div>
               </label>
             </div>
 
+            <!-- Инспектор сырого пейлоада эксплойта -->
+            <div class="soc-payload-inspector">
+              <div class="payload-header">
+                <span class="payload-title">СЫРОЙ ПЕЙЛОАД АТАКИ (PAYLOAD DUMP):</span>
+                <span class="payload-badge" id="payload-proto">SMB / RPC</span>
+              </div>
+              <pre class="payload-code" id="payload-code">SMB2_TREE_CONNECT: \\DC01.corp\IPC$ | NTLMSSP_AUTH: buh_lead (Hash: 3291f0a8d...)</pre>
+            </div>
+
             <div class="soc-action-row">
-              <button id="btn-run-attack" class="btn btn-primary sound-click" data-tooltip="Запустить выбранный сценарий боевой атаки">
+              <button id="btn-run-attack" class="btn btn-primary sound-click" data-tooltip="Запустить автоматический бой с анимацией радара">
                 <span class="btn-icon">⚔️</span>
-                <span>Запустить атаку</span>
+                <span>Боевой пуск</span>
               </button>
-              <button id="btn-reset-attack" class="btn btn-outline sound-click" data-tooltip="Сбросить состояние SOC станции">
+              <button id="btn-step-attack" class="btn btn-secondary sound-click" data-tooltip="Пошаговый разбор этапов перехвата интрузии">
+                <span class="btn-icon">⏯️</span>
+                <span>Шаг за шагом</span>
+              </button>
+              <button id="btn-reset-attack" class="btn btn-outline sound-click" data-tooltip="Сбросить состояние киберполигона">
                 <span>Сброс</span>
               </button>
             </div>
@@ -349,10 +476,10 @@
               <div class="soc-defense-badge" id="soc-defense-status">СТАТУС: МОНИТОРИНГ ОНЛАЙН</div>
             </div>
 
-            <!-- Консоль логов атаки -->
+            <!-- Понятный лог с подробным объяснением каждого шага -->
             <div class="soc-log-console" id="soc-log-stream">
-              <div class="soc-log-line dim-log">[SYSTEM] Ядро UEBA активно. Ролевые бейзлайны: 100% сошлись.</div>
-              <div class="soc-log-line dim-log">[READY] Выберите сценарий интрузии слева и нажмите "Запустить атаку"...</div>
+              <div class="soc-log-line dim-log">[SOC READY] Защитный контур ProTesla Labs активен. Служба eBPF мониторит системные вызовы ядра.</div>
+              <div class="soc-log-line dim-log">[ИНСТРУКЦИЯ] Выберите вектор атаки слева и нажмите "Боевой пуск" для автоматической симуляции или "Шаг за шагом" для детального изучения.</div>
             </div>
 
             <!-- Метрики нейтрализации -->
@@ -362,11 +489,11 @@
                 <span class="soc-m-v" id="soc-reaction-time">—</span>
               </div>
               <div class="soc-m-box">
-                <span class="soc-m-k">Дрейф вектора:</span>
+                <span class="soc-m-k">Дрейф Вассерштейна:</span>
                 <span class="soc-m-v" id="soc-drift-score">—</span>
               </div>
               <div class="soc-m-box">
-                <span class="soc-m-k">Калиброванный квантиль:</span>
+                <span class="soc-m-k">Квантиль риска:</span>
                 <span class="soc-m-v" id="soc-calibrated-q">—</span>
               </div>
               <div class="soc-m-box">

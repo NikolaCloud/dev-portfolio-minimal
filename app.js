@@ -889,11 +889,12 @@
   }
 
   // =========================================================================
-  // 16. SOC BATTLE STATION ENGINE (ATTACK VS UEBA DETECTOR)
+  // 16. SOC BATTLE STATION ENGINE (MULTI-STAGE RADAR & CYBER RANGE)
   // =========================================================================
   function initSOCBattle() {
     const radioItems = document.querySelectorAll('.attack-scenario-item');
     const runBtn = document.getElementById('btn-run-attack');
+    const stepBtn = document.getElementById('btn-step-attack');
     const resetBtn = document.getElementById('btn-reset-attack');
     const statusBadge = document.getElementById('soc-defense-status');
     const radarDot = document.querySelector('.soc-radar-dot');
@@ -904,75 +905,401 @@
     const calibEl = document.getElementById('soc-calibrated-q');
     const verdictEl = document.getElementById('soc-action-verdict');
 
+    const payloadProto = document.getElementById('payload-proto');
+    const payloadCode = document.getElementById('payload-code');
+    const pipelineSteps = document.querySelectorAll('.pipeline-step');
+    const radarCanvas = document.getElementById('soc-radar-canvas');
+
     if (!runBtn || !logConsole) return;
 
-    // Radio select visual state
-    radioItems.forEach(item => {
-      item.addEventListener('click', () => {
-        radioItems.forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        const radio = item.querySelector('input[type="radio"]');
-        if (radio) radio.checked = true;
-        SFX.click();
-      });
-    });
+    // --- A. RADAR CANVAS 60 FPS RENDERER ---
+    let radarCtx = radarCanvas ? radarCanvas.getContext('2d') : null;
+    let attackState = 'idle'; // 'idle', 'attacking', 'intercepted', 'quarantined'
+    let attackPackets = [];
+    let sparkParticles = [];
+    let shieldPulseAngle = 0;
 
+    const rWidth = radarCanvas ? radarCanvas.width : 1080;
+    const rHeight = radarCanvas ? radarCanvas.height : 150;
+
+    function renderRadar() {
+      if (!radarCtx) return;
+      radarCtx.clearRect(0, 0, rWidth, rHeight);
+
+      // Grid Lines
+      radarCtx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+      radarCtx.lineWidth = 1;
+      for (let x = 0; x < rWidth; x += 40) {
+        radarCtx.beginPath();
+        radarCtx.moveTo(x, 0);
+        radarCtx.lineTo(x, rHeight);
+        radarCtx.stroke();
+      }
+
+      // Positions
+      const attackerX = 110, attackerY = rHeight / 2;
+      const shieldX = rWidth / 2, shieldY = rHeight / 2;
+      const targetX = rWidth - 110, targetY = rHeight / 2;
+
+      // Draw Attacker Station
+      radarCtx.beginPath();
+      radarCtx.arc(attackerX, attackerY, 18, 0, Math.PI * 2);
+      radarCtx.fillStyle = attackState === 'quarantined' ? 'rgba(56, 189, 248, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+      radarCtx.strokeStyle = attackState === 'quarantined' ? '#38bdf8' : '#ef4444';
+      radarCtx.lineWidth = 2;
+      radarCtx.stroke();
+      radarCtx.fill();
+
+      // Attacker Label
+      radarCtx.font = '11px "SF Mono", monospace';
+      radarCtx.fillStyle = attackState === 'quarantined' ? '#38bdf8' : '#f87171';
+      radarCtx.textAlign = 'center';
+      radarCtx.fillText(attackState === 'quarantined' ? '[QUARANTINED]' : 'HOSTILE: 185.220.101.4', attackerX, attackerY + 34);
+
+      // Draw Target Infrastructure
+      radarCtx.beginPath();
+      radarCtx.arc(targetX, targetY, 20, 0, Math.PI * 2);
+      radarCtx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+      radarCtx.strokeStyle = '#10b981';
+      radarCtx.lineWidth = 2;
+      radarCtx.stroke();
+      radarCtx.fill();
+
+      radarCtx.fillStyle = '#6ee7b7';
+      radarCtx.fillText('ENTERPRISE DC01', targetX, targetY + 34);
+
+      // Draw Central UEBA Shield
+      shieldPulseAngle += 0.03;
+      const shieldRadius = 26 + Math.sin(shieldPulseAngle) * 3;
+
+      radarCtx.beginPath();
+      radarCtx.arc(shieldX, shieldY, shieldRadius, 0, Math.PI * 2);
+      if (attackState === 'intercepted' || attackState === 'quarantined') {
+        radarCtx.fillStyle = 'rgba(16, 185, 129, 0.25)';
+        radarCtx.strokeStyle = '#34d399';
+        radarCtx.lineWidth = 3;
+        radarCtx.shadowColor = '#10b981';
+        radarCtx.shadowBlur = 15;
+      } else if (attackState === 'attacking') {
+        radarCtx.fillStyle = 'rgba(245, 158, 11, 0.2)';
+        radarCtx.strokeStyle = '#f59e0b';
+        radarCtx.lineWidth = 2.5;
+        radarCtx.shadowColor = '#f59e0b';
+        radarCtx.shadowBlur = 12;
+      } else {
+        radarCtx.fillStyle = 'rgba(56, 189, 248, 0.12)';
+        radarCtx.strokeStyle = '#38bdf8';
+        radarCtx.lineWidth = 1.5;
+        radarCtx.shadowBlur = 0;
+      }
+      radarCtx.stroke();
+      radarCtx.fill();
+      radarCtx.shadowBlur = 0;
+
+      radarCtx.fillStyle = '#f3f4f6';
+      radarCtx.fillText('UEBA SENTINEL SHIELD', shieldX, shieldY + 40);
+
+      // In-flight Attack Packets
+      for (let i = attackPackets.length - 1; i >= 0; i--) {
+        const p = attackPackets[i];
+        p.x += p.vx;
+
+        // If packet hits shield
+        if (p.x >= shieldX - 20) {
+          // Spark explosion
+          for (let s = 0; s < 6; s++) {
+            sparkParticles.push({
+              x: shieldX - 10,
+              y: shieldY + (Math.random() - 0.5) * 30,
+              vx: (Math.random() - 0.8) * 4,
+              vy: (Math.random() - 0.5) * 4,
+              life: 1
+            });
+          }
+          attackPackets.splice(i, 1);
+          continue;
+        }
+
+        radarCtx.beginPath();
+        radarCtx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        radarCtx.fillStyle = '#ef4444';
+        radarCtx.shadowColor = '#ef4444';
+        radarCtx.shadowBlur = 10;
+        radarCtx.fill();
+        radarCtx.shadowBlur = 0;
+
+        // Packet tail
+        radarCtx.beginPath();
+        radarCtx.moveTo(p.x, p.y);
+        radarCtx.lineTo(p.x - 18, p.y);
+        radarCtx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+        radarCtx.lineWidth = 2;
+        radarCtx.stroke();
+      }
+
+      // Spark Particles
+      for (let s = sparkParticles.length - 1; s >= 0; s--) {
+        const sp = sparkParticles[s];
+        sp.x += sp.vx;
+        sp.y += sp.vy;
+        sp.life -= 0.05;
+
+        if (sp.life <= 0) {
+          sparkParticles.splice(s, 1);
+          continue;
+        }
+
+        radarCtx.beginPath();
+        radarCtx.arc(sp.x, sp.y, 2, 0, Math.PI * 2);
+        radarCtx.fillStyle = `rgba(52, 211, 153, ${sp.life})`;
+        radarCtx.fill();
+      }
+
+      // If Quarantined: draw containment cage around attacker
+      if (attackState === 'quarantined') {
+        radarCtx.strokeStyle = '#38bdf8';
+        radarCtx.lineWidth = 1.5;
+        radarCtx.strokeRect(attackerX - 35, attackerY - 30, 70, 60);
+
+        radarCtx.beginPath();
+        radarCtx.moveTo(attackerX - 35, attackerY - 30);
+        radarCtx.lineTo(shieldX, shieldY);
+        radarCtx.strokeStyle = 'rgba(56, 189, 248, 0.35)';
+        radarCtx.setLineDash([4, 4]);
+        radarCtx.stroke();
+        radarCtx.setLineDash([]);
+      }
+
+      requestAnimationFrame(renderRadar);
+    }
+    renderRadar();
+
+    // --- B. SCENARIO DATA WITH REAL PAYLOADS ---
     const scenarios = {
       'pass-the-hash': {
         name: 'Pass-the-Hash & Lateral Movement',
+        proto: 'SMB2 / RPC (Port 445)',
+        payload: 'SMB2_TREE_CONNECT: \\\\DC01.corp\\IPC$ | NTLMSSP_AUTH: buh_lead [Hash: 3291f0a8d...]',
         steps: [
-          { text: '[00:00.02] [INTRUSION] Зафиксирован NTLM-хэш: User "buh_lead" -> Target "DC01.corp.internal"', cls: 'crit-log', delay: 250 },
-          { text: '[00:00.35] [UEBA TELEMETRY] Нетипичный порт: RPC/SMB 445 из сегмента рабочих станций бухгалтерии', cls: 'seq-log', delay: 650 },
-          { text: '[00:00.78] [SEQ-ACGAN] Вычисление расстояния Вассерштейна: W(P_real, P_syn) = 4.82σ', cls: 'calib-log', delay: 1100 },
-          { text: '[00:01.12] [QUANTILE CALIBRATOR] Экстремальный ролевой квантиль: p_calibrated = 0.984 (> τ_crit 0.95)', cls: 'crit-log', delay: 1550 },
-          { text: '[00:01.40] [AUTOMATED DEFENSE] Вердикт: LATERAL_MOVEMENT. Сессия заморожена. eBPF фильтр блокирует сокет.', cls: 'defense-log', delay: 2000 }
+          {
+            stepIdx: 1,
+            text: '[01. ИНЪЕКЦИЯ] Зафиксирован NTLM-хэш: Учетная запись "buh_lead" пытается открыть скрытую сессию к \\\\DC01.corp\\IPC$.',
+            cls: 'crit-log',
+            status: 'Внедрение зафиксировано'
+          },
+          {
+            stepIdx: 2,
+            text: '[02. eBPF ПЕРЕХВАТ] Ядро фиксирует нетипичный сокет SMB 445 из бухгалтерской подсети. Стек вызовов передан в UEBA.',
+            cls: 'seq-log',
+            status: 'Syscalls перехвачены'
+          },
+          {
+            stepIdx: 3,
+            text: '[03. SEQ-ACGAN АНАЛИЗ] Генеративно-состязательная модель рассчитала дрейф Вассерштейна: W = +4.82σ (Ролевой профиль не совпадает!).',
+            cls: 'calib-log',
+            status: 'Дрейф роли +4.82σ'
+          },
+          {
+            stepIdx: 4,
+            text: '[04. КВАНТИЛЬНАЯ КАЛИБРОВКА] Двухуровневый калибратор пересчитал квантили: p_calibrated = 0.984 (> порога τ_crit 0.95).',
+            cls: 'crit-log',
+            status: 'Риск: 98.4% (Критично)'
+          },
+          {
+            stepIdx: 5,
+            text: '[05. АВТО-ИЗОЛЯЦИЯ] Вердикт: LATERAL_MOVEMENT. Сессия разорвана за 18мс. eBPF фильтр заблокировал сокет, IP помещен в карантин.',
+            cls: 'defense-log',
+            status: 'УГРОЗА ИЗОЛИРОВАНА'
+          }
         ],
         metrics: { time: '18 мс', drift: '+4.82σ', calib: '98.4%', action: 'ISOLATED_IN_EBPF' }
       },
 
       'sudo-exploit': {
         name: 'Privilege Escalation (Sudo CVE-2021-3156)',
+        proto: 'LOCAL PRIV-ESC (Syscall)',
+        payload: '/usr/bin/sudoedit -s "\\" [1120_bytes Heap Overflow Buffer] -> execve("/bin/sh")',
         steps: [
-          { text: '[00:00.01] [INTRUSION] Вызов бинарного файла: /usr/bin/sudoedit -s "\\" 1120_bytes (Heap Overflow)', cls: 'crit-log', delay: 250 },
-          { text: '[00:00.28] [UEBA TELEMETRY] Аномалия системных вызовов: ptrace & execve /bin/sh от пользователя "intern"', cls: 'seq-log', delay: 650 },
-          { text: '[00:00.64] [SEQ-ACGAN] Всплеск энтропии командной строки: S_seq = 0.991 (Базовый профиль роли < 0.20)', cls: 'calib-log', delay: 1100 },
-          { text: '[00:00.95] [QUANTILE CALIBRATOR] Квантильная отсечка: p_calibrated = 0.999 (CRITICAL PRIVILEGE BREACH)', cls: 'crit-log', delay: 1550 },
-          { text: '[00:01.20] [AUTOMATED DEFENSE] Вердикт: ROOT_EXPLOIT_PREVENTED. Процесс SIGKILL. Права сброшены, alert в SIEM.', cls: 'defense-log', delay: 2000 }
+          {
+            stepIdx: 1,
+            text: '[01. ИНЪЕКЦИЯ] Попытка переполнения кучи в sudoedit (CVE-2021-3156) пользователем "intern" (UID 1002).',
+            cls: 'crit-log',
+            status: 'Инъекция буфера'
+          },
+          {
+            stepIdx: 2,
+            text: '[02. eBPF ПЕРЕХВАТ] Детектор ядра перехватил опасную цепочку вызовов: ptrace & execve("/bin/sh") с повышенными привилегиями.',
+            cls: 'seq-log',
+            status: 'Перехват execve()'
+          },
+          {
+            stepIdx: 3,
+            text: '[03. SEQ-ACGAN АНАЛИЗ] Seq-ACGAN фиксирует аномальный всплеск энтропии командной строки: S_seq = 0.991 (норма роли < 0.20).',
+            cls: 'calib-log',
+            status: 'Всплеск энтропии +5.90σ'
+          },
+          {
+            stepIdx: 4,
+            text: '[04. КВАНТИЛЬНАЯ КАЛИБРОВКА] Экстремальный квантиль EVT: p_calibrated = 0.999 (Критическое нарушение роли стажера).',
+            cls: 'crit-log',
+            status: 'Риск: 99.9% (Root Breach)'
+          },
+          {
+            stepIdx: 5,
+            text: '[05. АВТО-ИЗОЛЯЦИЯ] Вердикт: ROOT_EXPLOIT_PREVENTED. Процесс мгновенно завершен (SIGKILL), права сброшены, alert в SIEM.',
+            cls: 'defense-log',
+            status: 'SIGKILL ВЫПОЛНЕН'
+          }
         ],
         metrics: { time: '14 мс', drift: '+5.90σ', calib: '99.9%', action: 'SIGKILL_PROCESS' }
       },
 
       'ssh-brute': {
         name: 'SSH Distributed Brute-Force',
+        proto: 'SSH-2.0 / TCP 22',
+        payload: 'SSH_AUTH_REQ: user="root" pass="****" | 140 req/s from 25 Tor Nodes (Lag: 8ms)',
         steps: [
-          { text: '[00:00.02] [INTRUSION] Входящий поток: 140 попыток авторизации / сек с 25 IP-адресов Tor/Proxy', cls: 'crit-log', delay: 250 },
-          { text: '[00:00.30] [UEBA TELEMETRY] Временной лаг между попытками: Δt < 12ms (Синтетический ботнет)', cls: 'seq-log', delay: 650 },
-          { text: '[00:00.70] [SEQ-ACGAN] Несоответствие человеческому ритму набора: confidence = 0.002', cls: 'calib-log', delay: 1100 },
-          { text: '[00:01.05] [QUANTILE CALIBRATOR] Превышение лимита сессий: p_calibrated = 0.978', cls: 'crit-log', delay: 1550 },
-          { text: '[00:01.35] [AUTOMATED DEFENSE] Вердикт: BRUTEFORCE_ATTACK. 25 IP отправлены в джейл Fail2ban & UFW drop.', cls: 'defense-log', delay: 2000 }
+          {
+            stepIdx: 1,
+            text: '[01. ИНЪЕКЦИЯ] Входящий поток: 140 параллельных попыток входа в секунду с 25 различных прокси-узлов.',
+            cls: 'crit-log',
+            status: 'Массовый перебор'
+          },
+          {
+            stepIdx: 2,
+            text: '[02. eBPF ПЕРЕХВАТ] Сетевой стек ядра фиксирует машинную регулярность: интервал между попытками Δt < 12мс (Синтетический ботнет).',
+            cls: 'seq-log',
+            status: 'Ботнет зафиксирован'
+          },
+          {
+            stepIdx: 3,
+            text: '[03. SEQ-ACGAN АНАЛИЗ] Seq-ACGAN сопоставляет динамику набора символов с поведением человека: достоверность человека = 0.002.',
+            cls: 'calib-log',
+            status: 'Не-человеческий ритм'
+          },
+          {
+            stepIdx: 4,
+            text: '[04. КВАНТИЛЬНАЯ КАЛИБРОВКА] Превышение частотного квантиля пула IP: p_calibrated = 0.978 (Превышен порог брутфорса).',
+            cls: 'crit-log',
+            status: 'Риск: 97.8% (Brute)'
+          },
+          {
+            stepIdx: 5,
+            text: '[05. АВТО-ИЗОЛЯЦИЯ] Вердикт: BRUTEFORCE_ATTACK. 25 атакующих IP перманентно заблокированы через Fail2ban и UFW drop.',
+            cls: 'defense-log',
+            status: 'IP ЗАБЛОКИРОВАНЫ'
+          }
         ],
         metrics: { time: '22 мс', drift: '+4.10σ', calib: '97.8%', action: 'FAIL2BAN_PERMA_BLOCK' }
       },
 
       'dns-exfil': {
         name: 'Stealth DNS Tunneling Exfiltration',
+        proto: 'DNS (UDP 53)',
+        payload: 'QUERY: data-chunk-01.a89fd310a.c2-exfil.xyz IN A (Base64 SQL Dump fragment)',
         steps: [
-          { text: '[00:00.02] [INTRUSION] Аномальный DNS-трафик: Запросы к поддоменам *.c2-exfil.xyz (Base64 payload)', cls: 'crit-log', delay: 250 },
-          { text: '[00:00.38] [UEBA TELEMETRY] Энтропия имен доменов: Shannon Entropy H = 4.95 (норма < 2.8)', cls: 'seq-log', delay: 650 },
-          { text: '[00:00.80] [SEQ-ACGAN] Несоответствие протокольного профиля для пользователя роли "Разработчик"', cls: 'calib-log', delay: 1100 },
-          { text: '[00:01.15] [QUANTILE CALIBRATOR] Байесовский скоринг утечки данных: p_calibrated = 0.989', cls: 'crit-log', delay: 1550 },
-          { text: '[00:01.45] [AUTOMATED DEFENSE] Вердикт: DNS_TUNNEL_EXFILTRATION. DNS Sinkhole активирован. Сокет закрыт.', cls: 'defense-log', delay: 2000 }
+          {
+            stepIdx: 1,
+            text: '[01. ИНЪЕКЦИЯ] Скрытная выгрузка: Запросы к поддоменам *.c2-exfil.xyz с фрагментами базы данных в Base64.',
+            cls: 'crit-log',
+            status: 'Скрытный канал DNS'
+          },
+          {
+            stepIdx: 2,
+            text: '[02. eBPF ПЕРЕХВАТ] eBPF перехватывает серию высокоэнтропийных UDP-пакетов от непривилегированного процесса.',
+            cls: 'seq-log',
+            status: 'UDP пакетирование'
+          },
+          {
+            stepIdx: 3,
+            text: '[03. SEQ-ACGAN АНАЛИЗ] Энтропия Шеннона доменных имен H = 4.95 (норма < 2.8). Seq-ACGAN фиксирует дрейф протокола.',
+            cls: 'calib-log',
+            status: 'Энтропия Шеннона H=4.95'
+          },
+          {
+            stepIdx: 4,
+            text: '[04. КВАНТИЛЬНАЯ КАЛИБРОВКА] Калибровка вероятности утечки конфиденциальных данных: p_calibrated = 0.989.',
+            cls: 'crit-log',
+            status: 'Риск: 98.9% (Exfil)'
+          },
+          {
+            stepIdx: 5,
+            text: '[05. АВТО-ИЗОЛЯЦИЯ] Вердикт: DNS_TUNNEL_EXFILTRATION. Активирован локальный DNS Sinkhole. Сокет закрыт, утечка предотвращена.',
+            cls: 'defense-log',
+            status: 'SINKHOLE АКТИВИРОВАН'
+          }
         ],
         metrics: { time: '19 мс', drift: '+4.95σ', calib: '98.9%', action: 'DNS_SINKHOLE_ACTIVE' }
       }
     };
 
-    let battleRunning = false;
+    function updatePayloadUI(key) {
+      const s = scenarios[key];
+      if (s && payloadProto && payloadCode) {
+        payloadProto.textContent = s.proto;
+        payloadCode.textContent = s.payload;
+      }
+    }
 
+    radioItems.forEach(item => {
+      item.addEventListener('click', () => {
+        radioItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+        const radio = item.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
+        const key = item.getAttribute('data-scenario') || 'pass-the-hash';
+        updatePayloadUI(key);
+        SFX.click();
+      });
+    });
+
+    // Initial payload UI
+    updatePayloadUI('pass-the-hash');
+
+    let battleRunning = false;
+    let stepCurrentIndex = 0;
+
+    function resetPipelineUI() {
+      pipelineSteps.forEach(s => {
+        s.className = 'pipeline-step';
+        const st = s.querySelector('.step-status');
+        if (st) st.textContent = 'Ожидание';
+      });
+    }
+
+    function setPipelineStepState(stepNum, state, statusText) {
+      pipelineSteps.forEach(s => {
+        const num = parseInt(s.getAttribute('data-step'));
+        if (num < stepNum) {
+          s.className = 'pipeline-step complete';
+        } else if (num === stepNum) {
+          s.className = `pipeline-step ${state}`;
+          const st = s.querySelector('.step-status');
+          if (st && statusText) st.textContent = statusText;
+        } else {
+          s.className = 'pipeline-step';
+        }
+      });
+    }
+
+    function launchPackets() {
+      for (let i = 0; i < 7; i++) {
+        setTimeout(() => {
+          attackPackets.push({
+            x: 130,
+            y: (rHeight / 2) + (Math.random() - 0.5) * 20,
+            vx: 6.5 + Math.random() * 2
+          });
+        }, i * 120);
+      }
+    }
+
+    // --- AUTO BATTLE ---
     runBtn.addEventListener('click', () => {
       if (battleRunning) return;
       battleRunning = true;
       runBtn.disabled = true;
+      if (stepBtn) stepBtn.disabled = true;
 
       const checked = document.querySelector('input[name="attack-vector"]:checked');
       const key = checked ? checked.value : 'pass-the-hash';
@@ -980,8 +1307,11 @@
 
       SFX.click();
       logConsole.innerHTML = '';
+      resetPipelineUI();
 
-      // Set analyzing state
+      attackState = 'attacking';
+      launchPackets();
+
       statusBadge.textContent = 'СТАТУС: АНАЛИЗ ИНТРУЗИИ...';
       statusBadge.className = 'soc-defense-badge analyzing';
       if (radarDot) radarDot.className = 'soc-radar-dot alert';
@@ -993,19 +1323,31 @@
       verdictEl.className = 'soc-m-v highlight-green';
 
       scenario.steps.forEach((step, idx) => {
+        const delay = (idx + 1) * 550;
         setTimeout(() => {
+          // Log output
           const div = document.createElement('div');
           div.className = `soc-log-line ${step.cls}`;
           div.textContent = step.text;
           logConsole.appendChild(div);
           logConsole.scrollTop = logConsole.scrollHeight;
 
-          // Sound cues
-          if (idx === 0) SFX.alert();
-          if (idx === 2) SFX.terminal();
-          if (idx === scenario.steps.length - 1) {
-            // Victory / Neutralized
+          // Pipeline update
+          setPipelineStepState(step.stepIdx, idx === scenario.steps.length - 1 ? 'complete' : 'active', step.status);
+
+          // Audio & Visual transitions
+          if (idx === 0) {
             SFX.alert();
+          }
+          if (idx === 2) {
+            SFX.terminal();
+            attackState = 'intercepted';
+          }
+          if (idx === scenario.steps.length - 1) {
+            // Success & Containment
+            attackState = 'quarantined';
+            SFX.alert();
+
             statusBadge.textContent = 'СТАТУС: УГРОЗА НЕЙТРАЛИЗОВАНА';
             statusBadge.className = 'soc-defense-badge';
             statusBadge.style.borderColor = '#10b981';
@@ -1020,16 +1362,86 @@
 
             battleRunning = false;
             runBtn.disabled = false;
+            if (stepBtn) stepBtn.disabled = false;
           }
-        }, step.delay);
+        }, delay);
       });
     });
 
+    // --- STEP-BY-STEP MODE ---
+    if (stepBtn) {
+      stepBtn.addEventListener('click', () => {
+        if (battleRunning) return;
+
+        const checked = document.querySelector('input[name="attack-vector"]:checked');
+        const key = checked ? checked.value : 'pass-the-hash';
+        const scenario = scenarios[key];
+
+        if (stepCurrentIndex === 0) {
+          logConsole.innerHTML = '';
+          resetPipelineUI();
+          attackState = 'attacking';
+          launchPackets();
+          statusBadge.textContent = 'СТАТУС: ПОШАГОВЫЙ РАЗБОР...';
+          statusBadge.className = 'soc-defense-badge analyzing';
+        }
+
+        if (stepCurrentIndex < scenario.steps.length) {
+          const step = scenario.steps[stepCurrentIndex];
+          const div = document.createElement('div');
+          div.className = `soc-log-line ${step.cls}`;
+          div.textContent = step.text;
+          logConsole.appendChild(div);
+          logConsole.scrollTop = logConsole.scrollHeight;
+
+          setPipelineStepState(step.stepIdx, stepCurrentIndex === scenario.steps.length - 1 ? 'complete' : 'active', step.status);
+          SFX.terminal();
+
+          if (stepCurrentIndex === 2) {
+            attackState = 'intercepted';
+          }
+
+          if (stepCurrentIndex === scenario.steps.length - 1) {
+            attackState = 'quarantined';
+            SFX.alert();
+            statusBadge.textContent = 'СТАТУС: УГРОЗА НЕЙТРАЛИЗОВАНА';
+            statusBadge.className = 'soc-defense-badge';
+            statusBadge.style.borderColor = '#10b981';
+            statusBadge.style.color = '#10b981';
+
+            reactionEl.textContent = scenario.metrics.time;
+            driftEl.textContent = scenario.metrics.drift;
+            calibEl.textContent = scenario.metrics.calib;
+            verdictEl.textContent = scenario.metrics.action;
+
+            stepBtn.textContent = 'Начать заново';
+            stepCurrentIndex++;
+            return;
+          }
+
+          stepCurrentIndex++;
+          stepBtn.textContent = `Шаг ${stepCurrentIndex + 1} / 5 →`;
+        } else {
+          // Reset step-by-step
+          stepCurrentIndex = 0;
+          stepBtn.textContent = 'Шаг за шагом';
+          resetBtn.click();
+        }
+      });
+    }
+
+    // --- RESET ---
     resetBtn.addEventListener('click', () => {
       SFX.click();
+      attackState = 'idle';
+      attackPackets = [];
+      sparkParticles = [];
+      stepCurrentIndex = 0;
+      if (stepBtn) stepBtn.textContent = 'Шаг за шагом';
+
       logConsole.innerHTML = `
-        <div class="soc-log-line dim-log">[SYSTEM] Ядро UEBA активно. Ролевые бейзлайны: 100% сошлись.</div>
-        <div class="soc-log-line dim-log">[READY] Выберите сценарий интрузии слева и нажмите "Запустить атаку"...</div>
+        <div class="soc-log-line dim-log">[SOC READY] Защитный контур ProTesla Labs активен. Служба eBPF мониторит системные вызовы ядра.</div>
+        <div class="soc-log-line dim-log">[ИНСТРУКЦИЯ] Выберите вектор атаки слева и нажмите "Боевой пуск" для автоматической симуляции или "Шаг за шагом" для детального изучения.</div>
       `;
       statusBadge.textContent = 'СТАТУС: МОНИТОРИНГ ОНЛАЙН';
       statusBadge.className = 'soc-defense-badge';
@@ -1037,12 +1449,16 @@
       statusBadge.style.color = '';
       if (radarDot) radarDot.className = 'soc-radar-dot';
 
+      resetPipelineUI();
+
       reactionEl.textContent = '—';
       driftEl.textContent = '—';
       calibEl.textContent = '—';
       verdictEl.textContent = 'PASSIVE_LISTEN';
       verdictEl.className = 'soc-m-v highlight-green';
+
       runBtn.disabled = false;
+      if (stepBtn) stepBtn.disabled = false;
       battleRunning = false;
     });
   }
